@@ -1,0 +1,45 @@
+    </div>
+        <div class="content-margin-20">&nbsp;</div>
+    <div id="sidebar1wrap">
+    
+    <?py include("sider.html") ?>
+    
+    </div>
+</div>
+<div id="footer"><small> &copy; #{{COPY_YEAR}} - <a href="#{{BASE_URL}}">#{SITE_TITLE}</a></small> 版权所有，程序由 <a href="http://saepy.sinaapp.com" target="_blank">SAEpy-log</a> 提供| <a  rel="nofollow" href="#top">回到页面顶部 ↑</a><br/><br/>
+<a href="#{{BASE_URL}}/feed">订阅本站</a> | <a href="#{{BASE_URL}}/admin/" style="color:grey" rel="nofollow">管理登录</a><br/><br/>
+<a href="http://sae.sina.com.cn" target="_blank"><img src="http://static.sae.sina.com.cn/image/poweredby/117X12px.gif" title="Powered by Sina App Engine"></a>
+</div>
+</div>
+
+<?py if 'postdetail' in _context and postdetail: ?>
+<?py     if obj.highlight: ?>
+<link rel="stylesheet" title="Sunburst" href="/static/highlight/sunburst.min.css">
+<script src="/static/highlight/highlight.min.js"></script>
+<script>
+    hljs.tabReplace = '    ';
+    hljs.initHighlightingOnLoad();
+</script>
+
+<?py     #endif ?>
+<?py #endif ?>
+
+<?py if GOOGLE_ANALYTICS_ID: ?>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', '#{GOOGLE_ANALYTICS_ID}']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+<?py #endif ?>
+
+</body>
+</html>

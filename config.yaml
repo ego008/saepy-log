@@ -1,0 +1,11 @@
+---
+name: saepy
+version: 1
+
+handle:
+- expire: if(path ~ "/static/default/style.css") time 31536000
+- expire: if(path ~ "(.*)\.(js|css|jpg|png|gif)") time 31536000
+- expire: if(path ~ "\/avatar\/.+") time 31536000
+- compress: if(out_header["Content-Length"] >= 1240) compress
+- hostaccess: if(path ~ "/task/") allow "10.0.0.0/8"
+...

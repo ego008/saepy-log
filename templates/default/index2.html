@@ -1,0 +1,32 @@
+<?py include("header.html") ?>
+
+<?py for _ in cache_as('list_%s_%s_%d' % ( listtype, namemd5, page), ARTICLE_LIST_TENJIN_CACHE): ?>
+
+<?py for obj in objs: ?>
+            <div class="post" id="post-#{obj.id}">
+            <h2><a href="#{obj.absolute_url}" rel="bookmark" title="Permanent Link to #{obj.title}">#{obj.title}</a> </h2>
+            <div class="postmetadata-top"><small>By #{{ADMIN_NAME}} at #{obj.add_time_fn} in <a href="#{{BASE_URL}}/category/#{obj.category}/" rel="category tag">#{obj.category}</a> ( <a href="#{obj.absolute_url}#comments" title="Comment on #{obj.title}">#{obj.comment_num} Comments</a> )</small></div>
+            <div>
+            #{obj.shorten_content}<br/>
+            <a href="#{obj.absolute_url}">继续阅读 →</a>
+            </div>
+        <?py if obj.tags: ?>
+            <div class="postmetadata-bottom"><small>Tags: #{obj.taglist}</small></div>
+        <?py #endif ?>
+        </div>
+<?py #endfor ?>
+
+        <div class="navlink">
+<?py if 1< page <= allpage: ?>
+            <div class="alignleft"><a href="#{{BASE_URL}}/#{listtype}_prev_page/#{page-1}/#{name}/" >&laquo; 上一页</a></div>
+<?py #endif ?>
+
+<?py if page< allpage: ?>
+            <div class="alignright"><a href="#{{BASE_URL}}/#{listtype}_next_page/#{page+1}/#{name}/" >下一页 &raquo;</a></div>
+<?py #endif ?>
+        </div>
+
+<?py #endfor ?>
+  <!-- /content -->
+
+<?py include("footer.html") ?>

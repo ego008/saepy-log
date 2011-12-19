@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<methodCall>
+  <methodName>weblogUpdates.extendedPing</methodName>
+  <params>
+    <param>
+      <value>#{{SITE_TITLE}}</value>
+    </param>
+    <param>
+      <value>#{{BASE_URL}}</value>
+    </param>
+    <param>
+      <value>#{{BASE_URL}}</value>
+    </param>
+    <param>
+      <value>#{{BASE_URL}}/feed</value>
+    </param>
+  </params>
+</methodCall>

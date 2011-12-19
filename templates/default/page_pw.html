@@ -1,0 +1,236 @@
+<?py include("header.html") ?>
+
+            <div class="post" id="post-#{obj.id}">
+            <h2><a href="#{obj.absolute_url}" rel="bookmark" title="Permanent Link to #{obj.title}">#{obj.title}</a> </h2>
+            <div class="postmetadata-top"><small>By #{{ADMIN_NAME}} at #{obj.add_time_fn} in <a href="#{{BASE_URL}}/category/#{obj.category}/" rel="category tag">#{obj.category}</a> ( <a href="#{obj.absolute_url}#comments" title="Comment on #{obj.title}">#{obj.comment_num} Comments</a> )</small></div>
+            <div>
+            <!-- pw req -->
+            <form name="pwform" action="" method="post" id="commentform">
+            <p>
+            本文已加密，请输入密码查看： 
+            </p>
+            <p>
+            <input type="text" value="" name="pw" size="10" />
+            <input type='hidden' value='inputpw' name='act' />
+            <input type="submit" value=" 提 交 " name="submit" class="submit submitbtn" />
+            </p>            
+            </form>
+            <!-- pw req -->
+<div class="addthis_toolbox addthis_default_style addthis_32x32_style" addthis:url='#{obj.absolute_url}' addthis:title='#{obj.title}' ><a class="addthis_button_preferred_1"></a><a class="addthis_button_preferred_2"></a><a class="addthis_button_preferred_3"></a><a class="addthis_button_preferred_4"></a><a class="addthis_button_compact"></a></div>
+            </div>
+        <?py if obj.tags: ?>
+            <div class="postmetadata-bottom"><small>Tags: #{obj.taglist}<br/>[本文引用地址] #{obj.shorten_url}</small></div>
+        <?py #endif ?>
+        
+        <?py if obj.relative: ?>
+        <p>您可能也对下面文章感兴趣:</p>
+        <ul class="seealso">
+        <?py for robj in obj.relative: ?>
+        <li><a href="#{{BASE_URL}}/topic/#{robj.id}/#{robj.slug}" rel="bookmark">#{robj.title}</a></li>
+        <?py #endfor ?>
+        </ul>
+        <?py #endif ?>
+
+        </div>
+
+<div class="navlink-posts">
+<?py if obj.prev_obj: ?>
+上一篇 &rsaquo; <a href="#{{BASE_URL}}/topic/#{obj.prev_obj.id}/#{obj.prev_obj.slug}" rel="prev">#{obj.prev_obj.title}</a>
+<br/> 
+<?py #endif ?>
+
+<?py if obj.next_obj: ?>
+下一篇 &rsaquo; <a href="#{{BASE_URL}}/topic/#{obj.next_obj.id}/#{obj.next_obj.slug}" rel="next">#{obj.next_obj.title}</a> 
+<?py #endif ?>
+</div>
+
+
+<a name="comments"></a>
+<?py if obj.comment_num > 0: ?>
+
+
+<div id="comments">
+<h2 class="comments">There are #{obj.comment_num} Comments to "#{obj.title}"</h2>
+<ul class="singlecomments" id="commentlist">
+
+<?py for _ in cache_as('post_comments_%s' % str(obj.id), ARTICLE_COMMENT_TENJIN_CACHE): ?>
+
+<?py include("comments.html") ?>
+
+<?py #endfor ?>
+
+</ul>
+
+<?py if obj.comment_num > EACH_PAGE_COMMENT_NUM: ?>
+<div class="navlink-posts bordertop">
+本主题还有 <strong id="hasnum">#{obj.comment_num - EACH_PAGE_COMMENT_NUM}</strong> 条评论未显示， <span id="idgoon"><a href="#" onclick="goon();return false;">猛击这里往下翻 ↓</a></span>
+</div>
+<?py #endif ?>
+
+</div>
+
+<?py else: ?>
+<div id="comments" style="display:none;">
+<h2 class="comments">There are 1 Comments to "#{obj.title}"</h2>
+<ul class="singlecomments" id="commentlist">
+
+</ul>
+</div>
+<?py #endif ?>
+
+<div id="respond">
+
+<?py if obj.closecomment: ?>
+
+<p>该篇文章已关闭评论</p>
+<script>
+function reply(toid, name){
+    return false;
+}
+</script>
+<?py else: ?>
+
+<a rel="nofollow" id="cancel-comment-reply-link" href="#{obj.absolute_url}#respond" style="display:none;">Cancel Reply</a><h2 class="respond">Write a Comment</h2>
+<form action="#{obj.absolute_url}" method="post" id="commentform">
+    <input type="text" id="author" value="" size="22" tabindex="1" />
+    <label for="author"> * Name (required)</label>
+    <p><input type="text" id="email" value="" size="22" tabindex="2" />
+    <label for="email"> * Email (required)</label></p>
+    <p><input type="text" id="url" value="" size="22" tabindex="3" />
+    <label for="url"> Website (http://.....)</label></p>
+    <input type='hidden' value='#{obj.id}' id='postkeyname' /> 
+    <input type='hidden' value='' id='toid' />
+    <p><textarea id="commentbox" cols="10" rows="10" tabindex="4"></textarea><br/> * Content (required) 10~500s</p>
+<p id="text"></p>
+
+<input type="button" id="submit" class="submit submitbtn" tabindex="5" value="Submit Comment" />
+
+</form>
+    
+<script src="#{JQUERY}" type="text/javascript"></script>
+<script src="/static/default/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+
+function testReg(reg,str){
+    return reg.test(str);
+}
+
+$('#submit').click(function(){
+    var emailreg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/g;
+    var urlreg = /^http:\/\/.+\..+/;
+    var email = $('#email').val();
+    var url = $('#url').val();
+    var con = $('#commentbox').val();
+    var author = $('#author').val();
+    
+    if(author.length< 1 || author.length > 30){
+        $('#author').focus();
+        return;
+    }
+        
+    if(!testReg(emailreg,email)){
+        $('#email').focus();
+        return;
+    }
+    if(url.length>0){
+        if(!testReg(urlreg,url)){
+            $('#url').focus();
+            return;
+        }
+    }
+    if(con.length< 10 || con.length > 500){
+        $('#commentbox').focus();
+        return;
+    }
+        
+    $('#submit').attr('disabled', 'disabled');
+    $('#text').html("Sending now.....");
+    
+    $.cookie('author', author, { expires: 365, path: '/' });
+    $.cookie('email', email, { expires: 365, path: '/' });
+    $.cookie('url', url, { expires: 365, path: '/' });
+    
+    $.ajax({
+        type: 'POST',
+        url: '#{request.path}',
+        dataType: "json",
+        data: {'act': 'postcomment', 'author': author, 'email':email, 'url': url, 'con': con,'postid': $('#postkeyname').val(), 'toid': $('#toid').val()},
+        success: function(data){
+              if(data.status == 200){
+                  $('#commentlist').append(data.msg);
+                  $('#comments').fadeIn("slow");
+                  $('#commentbox').val('');
+                  $('#text').html('');
+                  var cnum = Number($.cookie('usercomnum'));
+                  if(cnum == null){
+                      cnum = 1;
+                  }else{
+                      cnum += 1;
+                  }
+                  $.cookie('usercomnum', cnum, { expires: 1, path: '/' });
+                  $('#submit').removeAttr("disabled");
+                  //window.location.reload();
+              }else{
+                  $('#text').html(data.msg);
+              }
+              $('#submit').removeAttr("disabled");
+        }
+        
+    });
+    
+    return false;
+    
+});
+
+function reply(toid, name){
+    var ct = $('#commentbox');
+    ct.focus();
+    ct.val('@'+name + ' ' + ct.val());
+    $('#toid').val(toid);
+    return false;
+}
+
+<?py if obj.comment_num > EACH_PAGE_COMMENT_NUM: ?>
+function goon(){
+    var fromid = $("#commentlist li:last").attr('id').split("-")[1];
+    var showednum = $("#commentlist li").length;
+    
+    $.ajax({
+        type: 'POST',
+        url: '#{request.path}',
+        dataType: "json",
+        data: {'act': 'readmorecomment', 'fromid': fromid, 'showednum':showednum, 'allnum': '#{obj.comment_num}' },
+        success: function(data){
+            
+            if(data.status == 200){
+                $('#commentlist').append(data.commentstr);
+                $('#hasnum').text(data.lavenum);
+                if(data.lavenum == 0){
+                    $('#idgoon').html('没有了！在下面补上一条吧！！');
+                }
+            }
+        }
+        
+    });
+    
+    return false;
+}
+
+<?py #endif ?>
+
+$(document).ready(function(){      
+    $('#author').val($.cookie('author'));
+    $('#email').val($.cookie('email'));
+    $('#url').val($.cookie('url'));    
+});
+
+</script>
+
+<?py #endif ?>
+
+</div>
+
+  <!-- /content -->
+
+<?py include("footer.html") ?>

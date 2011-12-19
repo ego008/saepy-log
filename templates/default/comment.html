@@ -1,0 +1,20 @@
+<li class="comment even thread-even depth-1" id="comment-#{cobjid}"> 
+    <div id="div-comment-1"> 
+        <div class="comment-author vcard"> 
+        <img alt='' src='#{gravatar}?s=48&d=monsterid' class='avatar avatar-48 photo' height='48' width='48' />
+        <cite class="fn">
+<?py if url: ?>
+        <a href='#{url}' rel='external nofollow' class='url' target="_blank">#{author}</a>
+<?py else: ?>
+#{author}
+<?py #endif ?>
+        </cite> <span class="says">says:</span>
+        </div> 
+<?py if not visible: ?>
+        <em>Your comment is awaiting moderation.</em>
+<?py #endif ?>
+        <div class="comment-meta commentmetadata">0 分钟以前</div>
+        <p class="comcon">#{content}</p> 
+        <div class="reply"></div> 
+    </div> 
+</li> 

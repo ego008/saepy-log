@@ -1,0 +1,103 @@
+*{margin:0 auto}
+body{background:#231f20;color:#000;font-family:Georgia, "Times New Roman", Times, serif;font-size:.75em;margin-top:0}
+cite{font-style:normal}
+cite a{color:#f70;font-style:normal}
+code{background:#efefef;border:1px solid #dfdfdf;display:block;font-size:1.1em;line-height:1.3em;padding:10px}
+h2{font-size:1.5em;font-weight:400}
+p{line-height:1.5em;margin-top:20px;text-align:left}
+pre{background:#efefef;border:1px solid #dfdfdf;display:block;font-size:1.1em;line-height:1.3em;margin-top:20px;overflow:auto;padding:10px}
+textarea{font-family:Arial;font-size:1em}
+#wrap{background:#efefef;border:15px solid #4E4C4D;width:930px;padding-top:15px}
+#bannerwrap{text-align:center;width:830px}
+#contentwrap{width:830px}
+#contentwrap h1{background:#000;color:#fff;font-weight:400;margin-bottom:20px;padding:20px}
+#contentwrap h1 a{color:#fff}
+#content{float:right;width:550px}
+.content-margin-20{float:left;width:20px}
+#content h1 .description{color:#fff;font-size:.5em;font-weight:400}
+.post embed,.post img,.post object{display:block;margin-top:20px;max-width:496px}
+.post img,.post object{border:4px solid #dfdfdf;padding:3px}
+.post embed.alignleft,.post img.alignleft,.post object.alignleft{margin:0 10px 10px 0}
+.post embed.alignright,.post img.alignright,.post object.alignright{margin:0 0 10px 10px}
+.post ul,.post ol{line-height:1.5em;margin-top:20px}
+.postmetadata-top{margin-top:.5em;text-transform:uppercase}
+.postmetadata-bottom{margin-top:20px;text-transform:uppercase}
+.post table{background:#efefef;border:1px solid #dfdfdf;border-collapse:collapse;line-height:1.5em;width:100%;margin:20px auto 0}
+.post th,.post td{background:#efefef;border:1px solid #dfdfdf;padding:5px}
+#sidebar1wrap{float:left;width:260px}
+#sidebar1{background:#fff;margin-bottom:20px;width:220px;padding:20px}
+#sidebar1 ul{margin:0;padding:0}
+#sidebar1 ul.children a,#sidebar1 li.page_item ul li.page_item a{padding-left:20px}
+#sidebar1 ul.children ul.children a,#sidebar1 li.page_item ul li.page_item ul li.page_item a{padding-left:30px}
+#sidebar1 ul.children ul.children ul.children a,#sidebar1 li.page_item ul li.page_item ul li.page_item ul li.page_item a{padding-left:40px}
+#sidebar1 li{list-style:none}
+#sidebar1 a,#sidebar1 li.recentcomments{border-bottom:1px dotted #dfdfdf;color:#000;display:block;padding:5px 5px 5px 10px}
+#sidebar1 li.recentcomments a{border:none}
+#sidebar1 .widget_text{border-bottom:1px dotted #dfdfdf}
+#sidebar1 .textwidget{padding:5px 0}
+#sidebar1 .textwidget img{display:block}
+#sidebar1 .widget_text a,#sidebar1 .widget_text a img{border:none;padding:0}
+#sidebar1 .widget_text a:hover{background:none;color:#000}
+#sidebar1 li.widget_categories ul li{border-bottom:1px dotted #dfdfdf;display:block;padding:5px 5px 5px 10px}
+#sidebar1 li.widget_categories ul li a{border-bottom:none;display:inline;padding:0}
+#sidebar1 h2.small{border-bottom:1px dotted #000;color:#f70;font-size:1em;font-weight:700;margin-top:20px;padding-bottom:5px}
+#sidebar1 select{width:100%;margin:5px 0}
+#sidebar1 #tag_cloud h2{margin-bottom:10px}
+#sidebar1 #tag_cloud a{border:none;display:inline;padding:0 3px}
+#sidebar1 table{border-top:1px dotted #000;width:100%}
+#sidebar1 table a{border:none;color:#000;display:block;font-weight:700;padding:3px}
+#sidebar1 table th{color:#000;text-align:center}
+#sidebar1 table td{color:#dfdfdf;text-align:center}
+#sidebar1 caption{color:#f70;font-size:1em;font-weight:700;margin-bottom:10px;text-align:left}
+#comments,#respond{background:#fff;width:550px}
+ul#commentlist{list-style:none;margin-bottom:20px;padding:0 20px}
+ul#commentlist li.comment{border-top:1px dotted #dfdfdf;padding:20px 0}
+ul#commentlist ul.children{list-style:none;padding:0 0 0 20px}
+ul#commentlist ul.children li{border-top:1px dotted #dfdfdf;margin:10px 0 0;padding:10px 0 0}
+ul#commentlist li blockquote blockquote{margin-bottom:0}
+h2.comments,h2.respond{color:#000;padding:20px}
+h2.commentpages{margin-bottom:20px}
+small a.comment-edit-link{color:#f70;text-transform:uppercase}
+#commentlist div .avatar{float:left;border:4px solid #dfdfdf;margin:0 10px 10px 0;padding:3px}
+.vcard .fn,.vcard .says{font-size:1.5em}
+.comment-meta{font-size:.8em;margin-bottom:40px;text-transform:uppercase}
+.reply{margin-top:20px;text-align:left}
+#cancel-comment-reply-link{margin-left:20px}
+li.depth-1 #respond{margin:0 0 -20px -20px}
+li.depth-2 #respond{margin:0 0 -20px -40px}
+li.depth-3 #respond{margin:0 0 -20px -60px}
+li.depth-4 #respond{margin:0 0 -20px -80px}
+li.depth-5 #respond{margin:0 0 -20px -100px}
+#commentform{margin-bottom:20px;width:510px;padding:0 20px 20px}
+#commentform #commentbox{height:100px;width:502px}
+#commentform #submit{color:#000;margin-top:20px}
+#commentform small{text-transform:normal}
+.commentlinks{padding:5px}
+.commentlinks a{color:#000;padding:5px 10px}
+.commentlinks a:hover{background:#000;color:#fff}
+.commentlinks .current{background:#000;color:#fff;padding:5px 10px}
+#s{background:#efefef url(../img/mag.png) top left no-repeat;border:1px solid #000;color:#000;width:192px;padding:3px 3px 3px 25px}
+#footer{border-top:1px solid #000;clear:both;text-align:right;width:830px;padding:20px 0}
+.navlink a{background:#fff;color:#f70;display:block;margin-bottom:20px;text-align:center;padding:10px}
+.navlink-posts{background:#fff;color:#f70;display:block;text-align:center;margin:20px 0;padding:10px}
+.wp-smiley{border:none;display:inline;margin:0}
+.aligncenter,div.aligncenter{display:block;margin-left:auto;margin-right:auto}
+.alignleft{float:left}
+.alignright{float:right}
+.ggad_post_top_link{margin-bottom:8px}
+.bigbtn{cursor:pointer;padding:4px}
+a,.post a{color:#f70;text-decoration:none}
+a:hover,.post a:hover{color:#000;text-decoration:none}
+#bannerwrap img,#banner-custom img{border:4px solid #000;margin-bottom:20px;max-width:816px;padding:3px}
+.post,#commentpages{background:#fff;margin-bottom:20px;padding:20px}
+.post blockquote,ul#commentlist li blockquote{border-left:4px solid #dfdfdf;margin-top:20px;padding:1em}
+.post blockquote p,ul#commentlist li blockquote p{margin:0}
+.post h2 a,.comment-meta a,#footer a,.navlink a:hover,.navlink-posts a:hover{color:#000}
+.post h2 a:hover,#sidebar1 a:hover,#sidebar1 li.widget_categories ul li:hover,#sidebar1 li.widget_categories ul li:hover a,.comment-meta a.comment-edit-link,#commentform a{color:#f70}
+.post input,#commentform input,#commentform textarea{background:#fff;border:1px solid #dfdfdf;color:#000;padding:3px}
+.post input[type=submit],#sidebar1 #calendar{margin-top:20px}
+#sidebar1 small,#footer small,.uppercase{text-transform:uppercase}
+#sidebar1 #calendar h2,#searchsubmit{display:none}
+.btn {cursor:pointer;}
+.red {color:red;}
+.submitbtn{cursor:pointer}

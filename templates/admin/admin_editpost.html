@@ -1,0 +1,157 @@
+<?py include("admin_header.html") ?>
+
+<?py if obj: ?>
+<!-- rich editer -->
+<script type="text/javascript" src="#{JQUERY}"></script>
+<script type="text/javascript" src="/static/markitup/jquery.markitup.js"></script>
+<script type="text/javascript" src="/static/markitup/sets/html/set.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/markitup/skins/simple/style.css" />
+<link rel="stylesheet" type="text/css" href="/static/markitup/sets/html/style.css" />
+<script type="text/javascript">
+<!--
+$(document).ready(function()	{
+	// Add markItUp! to your textarea in one line
+	$('#html').markItUp(myHtmlSettings);
+});
+-->
+</script>
+
+<!-- rich editer end -->
+
+<!-- facebox -->
+<link href="/static/facefiles/facebox.css" media="screen" rel="stylesheet" type="text/css" />
+<script src="/static/facefiles/facebox.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+      $('a[rel*=facebox]').facebox()
+	  //$('a[rel*=facebox]').click(); 
+    })
+</script>
+
+<!-- /facebox -->
+<span id="h"></span>
+<h2>#{title} (<a href="/admin/edit_post/#{obj.id}">重新载入</a> | <a href="/t/#{obj.id}" target="_blank">查看该文章</a> | <a href="#deldiv" rel="facebox[.thickstyle]">删除该文章</a>)</h2>
+<p id="text" style="color:red;"></p>
+
+<p>*分类: <input type="text" id="cat" style="width:150px;" value="${obj.category}" tabindex="1" /> 17s <a href="#catdiv" rel="facebox[.thickstyle]">从已有分类中选择</a></p>
+
+<p>*标题: <input type="text" id="tit" style="width:430px;" value="${obj.title}" tabindex="2" /> 100s</p>
+<textarea id="html" name="con" style="width:500px;height:300px;" tabindex="3">#{obj.content}</textarea>
+图片最宽显示496px
+<p>标签: <input type="text" id="tag" style="width:360px;" value="${obj.tags}" tabindex="4" /> 100s 用逗号分隔','<br/>
+<a href="#tagdiv" rel="facebox[.thickstyle]">从最近标签中选择</a>
+</p>
+<p>
+
+<?py ck = ['','checked'] ?>
+
+<label>关闭评论 <input type="checkbox" id="clo" value="True" tabindex="5" #{ck[obj.closecomment]} /></label> | 设置阅读密码: <input type="text" id="password" style="width:150px;" value="${obj.password}" tabindex="6" /> 8s
+</p>
+<p><button id="submit" class="bigbtn"> 提交修改 </button></p>
+
+<script>
+$('#submit').click(function(){
+    
+    var cat = $('#cat').val().replace(/(^\s*)|(\s*$)/g,"");
+	var tit = $('#tit').val().replace(/(^\s*)|(\s*$)/g,"");
+	var con = $('#html').val().replace(/(^\s*)|(\s*$)/g,"");
+	var tag = $('#tag').val().replace(/(^\s*)|(\s*$)/g,"");
+	var password = $('#password').val().replace(/(^\s*)|(\s*$)/g,"");
+	
+	var t = $('#text');
+	
+	if(cat.length< 1 || cat.length > 17){
+	    $('#cat').focus();
+		t.html("分类 必填 且最多可填17个字符");
+	    return;
+	}
+	
+	if(tit.length< 1 || tit.length > 100){
+	    $('#tit').focus();
+		t.html("标题 必填 且最多可填100个字符");
+	    return;
+	}
+	
+	if(con.length< 1){
+		document.getElementsByTagName('textarea')[0].focus();
+		t.html("内容 必填");
+	    return;
+	}
+		
+	if(tag.length > 100){
+	    $('#tag').focus();
+		t.html("标签最多可填100个字符");
+	    return;
+	}
+	
+	if(password.length > 8){
+	    $('#password').focus();
+		t.html("密码最多可设8个字符");
+	    return;
+	}
+		
+	$('#submit').attr('disabled', 'disabled');
+	t.html("Sending now.....");
+		
+	$.ajax({
+		type: 'POST',
+		url: '#{request.path}',
+		dataType: "json",		
+		data: {'cat': cat, 'clo': $('#clo').is(":checked"), 'tit': tit, 'con': con, 'tag': tag, 'password': password},
+		success: function(data){
+			t.html(data.status + ": "+ data.msg);
+            $('#submit').removeAttr("disabled");
+			scroll(0,$("#h").position().top);
+		}
+	});
+});
+
+function setcat(cat){
+    var catField = document.getElementById('cat');
+	catField.value = cat;
+}
+
+function settag(tag){
+    var tagField = document.getElementById('tag');
+	tagField.value += tag + ",";
+}
+
+</script>
+
+<div id="catdiv" style="display:none;line-height:1.7em;color:#999">
+<h4>请选择以下已有分类</h4>
+<?py for cat in cats: ?>
+<a href="#" onclick="setcat('#{cat.name}');return false;">#{cat.name}</a>, 
+<?py #endfor ?>
+</div>
+
+<div id="tagdiv" style="display:none;line-height:1.7em;color:#999">
+<h4>请选择以下已有标签</h4>
+<?py for tag in tags: ?>
+<a href="#" onclick="settag('#{tag.name}');return false;">#{tag.name}</a>, 
+<?py #endfor ?>
+</div>
+
+<div id="deldiv" style="display:none">
+<h4>你一定要删除这篇文章吗？</h4>
+<p>不推荐删除，建议 编辑文章 或 通过输入查看密码以屏蔽。</p>
+<p>我想好了，<a href="/admin/del_post/#{obj.id}">一定要删除它，不后悔</a>！！</p>
+</div>
+
+<?py else: ?>
+
+<form action="" method="post">
+<p>
+输入要编辑的文章 id <input type="text" value="" name="id" size="10" />
+<input type='hidden' value='findid' name='act' />
+<input type="submit" value=" 提 交 " name="submit" />
+</p>
+<p>如何知道文章id？示例文章网址如下，红色的字就是该文章的id：</p>
+<p>地址栏里的网址 http://saepy.sinaapp.com/topic/<span class="red">12</span>/sae-python-使用memcache-手记</p>
+<p>文章底部的 [本文引用地址] http://saepy.sinaapp.com/t/<span class="red">12</span></p>
+</form>
+
+<?py #endif ?>
+
+<?py include("admin_footer.html") ?>

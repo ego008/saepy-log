@@ -1,0 +1,19 @@
+<?py include("admin_header.html") ?>
+
+<h2>#{title}</h2>
+
+<form action="" method="post">
+<p>Name: <input type="text" name="name" value="#{obj.name}" size="22" tabindex="1" />
+Sort: <input type="text" name="sort" value="#{obj.sort}" size="10" tabindex="2" /><br />
+URL: <input type="text" name="url" value="#{obj.url}" size="46" tabindex="3" /> 
+<input type="submit" class="bigbtn" tabindex="4" value=" Submit " /></p>
+</form>
+<br />
+<h2>Links broll</h2>
+<ul>
+<?py for i in objs: ?>
+<li><a href="#{i.url}" title="Link to #{i.url}" target="_blank">#{i.name}</a> ( <a href="/admin/link/#{i.key()}">Edit</a> | <a href="/admin/link/#{i.key()}?act=del">Delete</a> )</li>
+<?py #endfor ?>
+</ul>
+
+<?py include("admin_footer.html") ?>

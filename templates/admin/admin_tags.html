@@ -1,0 +1,17 @@
+<?py include("admin_header.html") ?>
+
+<?py if obj: ?>
+    <h2>#{obj.key().name()} len #{len(obj.keys)}</h2>
+    
+    <p>Remove or add one. Separated with '|' or ','</p>
+    
+    <form action="" method="post">
+    <textarea name="input" cols="86" rows="15">#{' | '.join(obj.keys)} | </textarea>
+    <p><input type="submit" class="bigbtn" value="Submit" /></p>
+    </form>
+<?py else: ?>
+select an obj first.
+<?py #endif ?>
+
+  <!-- /content -->
+<?py include("admin_footer.html") ?>

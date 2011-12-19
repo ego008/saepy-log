@@ -1,0 +1,50 @@
+<?py include("admin_header.html") ?>
+<!-- rich editer -->
+<script type="text/javascript" src="#{JQUERY}"></script>
+<script type="text/javascript" src="/media/markitup/jquery.markitup.js"></script>
+<script type="text/javascript" src="/media/markitup/sets/html/set.js"></script>
+<link rel="stylesheet" type="text/css" href="/media/markitup/skins/simple/style.css" />
+<link rel="stylesheet" type="text/css" href="/media/markitup/sets/html/style.css" />
+<script type="text/javascript">
+<!--
+$(document).ready(function()	{
+	// Add markItUp! to your textarea in one line
+	$('#html').markItUp(myHtmlSettings);
+});
+-->
+</script>
+
+<!-- rich editer end -->
+
+<h2><<a href="/botadmin/edit/">Get new one</a>>  #{title} (<a href="/botadmin/edit/?act=del&key=#{obj.key()}" target="_blank">Delete</a> )</h2>
+<p id="text"></p>
+<p>Category id &raquo; #{obj.cat}</p>
+<p>Author: <input type="text" id="aut" style="width:150px;" value="${obj.aut}" /> default: #{{ADMIN_NAME}}</p>
+
+<p><input type="text" id="tit" style="width:500px;" value="${obj.tit}" /></p>
+<textarea id="html" name="con" style="width:500px;height:300px;">#{obj.con}</textarea><br/>
+images max width 650px<br/>
+<p>*<input type="text" id="tag" style="width:300px;" value="#{obj.tag}" /> Tags (Separated with ',')</p>
+<input type='hidden' value='#{obj.key()}' id='postkey' />
+<p><button id="submit" class="bigbtn"> Submit </button></p>
+
+<script>
+$('#submit').click(function(){
+    $('#submit').attr('disabled', 'disabled');
+    $('#text').html("Sending now.....");
+    
+	$.ajax({
+		type: 'POST',
+		url: '#{request.path}',
+		dataType: "json",		
+		data: {'aut': $('#aut').val(), 'tit': $('#tit').val(), 'con': $('#html').val(), 'tag': $('#tag').val(), 'postkey': $('#postkey').val()},
+		success: function(data){
+			$('#text').html(data.status + ": "+ data.msg);
+            $('#submit').removeAttr("disabled");
+		}
+	});
+});
+
+</script>
+
+<?py include("admin_footer.html") ?>

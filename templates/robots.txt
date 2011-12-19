@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+<?py for cat in cats: ?>
+Sitemap: #{BASE_URL}/sitemap_#{cat.id}.xml
+<?py #endfor ?>

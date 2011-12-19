@@ -1,0 +1,26 @@
+<?py from datetime import datetime ?>
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>${SITE_TITLE}</title>
+  <link rel="self" type="application/atom+xml" href="#{{BASE_URL}}#{request.uri}"/>
+  <link rel="hub" href="http://pubsubhubbub.appspot.com"/>
+  <updated>#{site_updated.strftime("%Y-%m-%dT%H:%M:%SZ")}</updated>
+  <id>#{{BASE_URL}}#{request.uri}</id>
+  <author>
+    <name>${ADMIN_NAME}</name>
+  </author>
+
+<?py for topic in posts: ?>
+  <entry>
+    <title>${ topic.title}</title>
+    <id>#{topic.absolute_url}</id>
+    <link rel="alternate" type="text/html" href="#{topic.absolute_url}" />
+    <published>#{datetime.fromtimestamp(topic.add_time).strftime("%Y-%m-%dT%H:%M:%SZ")}</published>
+    <updated>#{datetime.fromtimestamp(topic.edit_time).strftime("%Y-%m-%dT%H:%M:%SZ")}</updated>
+    <content type="html">
+      ${topic.shorten_content}
+    </content>
+  </entry>
+<?py #endfor ?>
+
+</feed>

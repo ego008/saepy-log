@@ -1,0 +1,43 @@
+<?py include("admin_header.html") ?>
+
+<h2>#{title}</h2>
+<?py if obj: ?>
+<form action="" method="post" id="commentform">
+    <input type="text" name="author" value="#{obj.author}" size="22" tabindex="1" />
+	<label for="author">Name (required)</label>
+	<p><input type="text" name="email" value="#{obj.email}" size="22" tabindex="2" />
+	<label for="email">Email (required)</label></p>
+	<p><input type="text" name="url" value="#{obj.url}" size="22" tabindex="3" />
+	<label for="url">Website</label></p>
+	<p><textarea id="commentbox" name="content" cols="10" rows="10" tabindex="4">#{obj.content}</textarea></p>
+    <?py ck = ['','checked'] ?>
+    <p><label>显示本条评论 <input type="checkbox" name="visible" value="True" tabindex="5" #{ck[obj.visible]} /></label></p>
+    <input type="submit" id="submit" class="submitbtn" tabindex="5" value="Submit Edit Comment" />
+</form>
+<?py else: ?>
+
+<form action="" method="post">
+<p>
+输入要编辑的评论 id <input type="text" value="" name="id" size="10" />
+<input type='hidden' value='findid' name='act' />
+<input type="submit" value=" 提 交 " name="submit" />
+</p>
+<p>如何知道评论id？每条评论的发表时间的连接网址如下，红色的字就是该文章的id：</p>
+<p>http://saepy.sinaapp.com/t/1#r<span class="red">29</span></p>
+</form>
+
+<?py #endif ?>
+<br/><br/>
+
+<h3>以下是最新 #{{RECENT_COMMENT_NUM}} 条评论</h3>
+<?py for cobj in comments: ?>
+<hr />
+<h3>#{cobj.author}(#{cobj.email})</h3> 
+<img alt='' src='#{cobj.gravatar}?s=48&d=monsterid' height='48' width='48' />
+<p>id: #{cobj.id}</p>
+<p>#{cobj.content}</p>
+<p>#{cobj.add_time} ( <a href="/admin/comment/#{cobj.id}">编辑</a> | <a href="/admin/comment/#{cobj.id}?act=del">删除</a> )</p>
+<p><a href="#{BASE_URL}/t/#{cobj.postid}#r#{cobj.id}" target="_blank">在文章中查看该评论</a></p>
+<?py #endfor ?>
+
+<?py include("admin_footer.html") ?>

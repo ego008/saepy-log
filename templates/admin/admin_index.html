@@ -1,0 +1,14 @@
+<?py include("admin_header.html") ?>
+
+<h2>#{title}</h2>
+<p>这里是简单的管理员控制面板，如果你在使用过程中遇到问题，欢迎到 <a href="http://saepy.sinaapp.com" target="_blank">官方博客</a> 反馈、交流。</p>
+
+<h3>#{test}</h3>
+<br/>
+<h3>下面是页面 headers 信息，可忽略不管</h3>
+<br/>
+<?py for k, v in request.headers.iteritems(): ?>
+#{k}: #{v}<br/>
+<?py #endfor ?>
+
+<?py include("admin_footer.html") ?>

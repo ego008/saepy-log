@@ -1,0 +1,26 @@
+<?py include("admin_header.html") ?>
+
+<h2>#{title}</h2>
+
+<form action="" method="post">
+
+<p>
+<label for="name">用户名</label>
+<input type="text" value="" name="name" size="25" /> 
+</p>
+
+<p>
+<label for="password">密　码</label>
+<input type="password" name="password" value="" size="25" />
+</p>
+<p>
+<?py if has_user: ?>
+	<input type="submit" value=" 登 入 " name="submit" class="btn" style="margin-left:70px;" />
+<?py else: ?>
+    <input type="submit" value=" 提 交 " name="submit" class="btn" style="margin-left:70px;" /><br/><br/>
+    (目前还没有管理员，请直接在上面输入用户名和密码，然后点提交按钮)
+<?py #endif ?>
+</p>
+</form>
+
+<?py include("admin_footer.html") ?>
