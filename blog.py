@@ -351,7 +351,7 @@ class Feed(BaseHandler):
 class Sitemap(BaseHandler):
     def get(self, id = ''):
         self.set_header('Content-Type','text/xml')
-        self.echo('sitemap.html', {'sitemapstr':Category.get_sitemap_by_id(id)})
+        self.echo('sitemap.html', {'sitemapstr':Category.get_sitemap_by_id(id), 'id': id})
         
 ########
 urls = [
