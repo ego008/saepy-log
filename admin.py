@@ -315,7 +315,7 @@ class FlushData(BaseHandler):
 
 class PingRPCTask(BaseHandler):
     def get(self):
-        for n in range(XML_RPC_ENDPOINTS):
+        for n in range(len(XML_RPC_ENDPOINTS)):
             add_task('default', '%s/task/pingrpc/%d' % (BASE_URL, n))
     
 class PingRPC(BaseHandler):
@@ -331,7 +331,7 @@ class PingRPC(BaseHandler):
         }
         
         req = urllib2.Request(
-            url = XML_RPC_ENDPOINTS[n],
+            url = XML_RPC_ENDPOINTS[int(n)],
             headers = headers,
             data = pingstr,
         )
