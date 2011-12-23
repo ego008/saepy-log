@@ -98,7 +98,10 @@ class PostDetail(BaseHandler):
             rp = self.get_cookie("rp%s" % id, '')
             if rp != obj.password:
                 tmpl = '_pw'
-                
+        
+        if self.is_spider():
+            self.set_header("Last-Modified", obj.last_modified)
+            
         self.echo('page%s.html'%tmpl, {
             'title': "%s - %s"%(obj.title, SITE_TITLE),
             'keywords':obj.keywords,

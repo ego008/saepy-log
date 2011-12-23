@@ -17,8 +17,12 @@ except:
 ##
 ##数据库配置信息
 if debug:
-    #已经在 setting.py 里设置
-    pass
+    MYSQL_DB = 'app_saepy'
+    MYSQL_USER = 'root'
+    MYSQL_PASS = '123'
+    MYSQL_HOST_M = '127.0.0.1'
+    MYSQL_HOST_S = '127.0.0.1'
+    MYSQL_PORT = '3306'
 else:
     import sae.const
     MYSQL_DB = sae.const.MYSQL_DB
@@ -92,6 +96,7 @@ def post_detail_formate(obj):
         obj.content = tran_content(obj.content, obj.highlight)
         obj.taglist = ', '.join(["""<a href="%s/tag/%s/" rel="tag">%s</a>"""%(BASE_URL, tag, tag) for tag in obj.tags.split(',')])
         obj.add_time_fn = time_from_now(int(obj.add_time))
+        obj.last_modified = timestamp_to_datetime(obj.edit_time)
         obj.keywords = obj.tags
         obj.description = HTML_REG.sub('',obj.content[:DESCRIPTION_CUT_WORDS])
         #get prev and next obj
