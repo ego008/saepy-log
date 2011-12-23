@@ -17,12 +17,8 @@ except:
 ##
 ##数据库配置信息
 if debug:
-    MYSQL_DB = 'app_saepy'
-    MYSQL_USER = 'root'
-    MYSQL_PASS = '123'
-    MYSQL_HOST_M = '127.0.0.1'
-    MYSQL_HOST_S = '127.0.0.1'
-    MYSQL_PORT = '3306'
+    #已经在setting里设置了
+    pass
 else:
     import sae.const
     MYSQL_DB = sae.const.MYSQL_DB
