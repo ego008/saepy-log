@@ -140,10 +140,9 @@ def authorized(url='/admin/login'):
     def wrap(handler):
         def authorized_handler(self, *args, **kw):
             request = self.request
-            logged = self.get_cookie('logged','')
-            #user_name_cookie = self.get_cookie('username','')
-            #user_pw_cookie = self.get_cookie('userpw','')
-            if logged and logged == '1':
+            user_name_cookie = self.get_cookie('username','')
+            user_pw_cookie = self.get_cookie('userpw','')
+            if user_name_cookie and user_pw_cookie:
                 from model import User
                 user = User.check_user(user_name_cookie, user_pw_cookie)
             else:
