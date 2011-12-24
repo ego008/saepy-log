@@ -14,7 +14,7 @@
   <entry>
     <title>${ topic.title}</title>
     <id>#{topic.absolute_url}</id>
-    <link rel="alternate" type="text/html" href="#{topic.absolute_url}" />
+	<link rel="alternate" type="text/html" href="#{topic.absolute_url}" />
     <published>#{datetime.fromtimestamp(topic.add_time).strftime("%Y-%m-%dT%H:%M:%SZ")}</published>
     <updated>#{datetime.fromtimestamp(topic.edit_time).strftime("%Y-%m-%dT%H:%M:%SZ")}</updated>
     <content type="html">

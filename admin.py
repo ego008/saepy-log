@@ -21,13 +21,19 @@ from model import Article, Comment, Link, Category, Tag, User, MyData
 if not debug:
     import sae.mail
     from sae.taskqueue import add_task
+    import sae.storage
     
 ######
-
+def put_obj2storage(file_name = '', data = '', domain_name = STORAGE_DOMAIN_NAME):
+    s = sae.storage.Client()
+    ob = sae.storage.Object(data = data)
+    return s.put(domain_name, file_name, ob)
+    
 ######
 class HomePage(BaseHandler):
     @authorized()
     def get(self):
+        #add_task('default', '%s/task/pingrpctask'%BASE_URL)
         #logging.error(self.request.headers)
         self.echo('admin_index.html', {
             'title': "%s - %s"%(SITE_TITLE,SITE_SUB_TITLE),
@@ -95,6 +101,35 @@ class AddUser(BaseHandler):
 class Forbidden(BaseHandler):
     def get(self):
         self.write('Forbidden page')
+
+class FileUpload(BaseHandler):
+    def post(self):
+        self.set_header('Content-Type','text/html')
+        rspd = {'status': 201, 'msg':'ok'}
+        
+        filetoupload = self.request.files['filetoupload']
+        if filetoupload:
+            myfile = filetoupload[0]
+            try:
+                new_file_name = "%s.%s"% (str(int(time())),myfile['filename'].split('.')[-1].lower())
+            except:
+                new_file_name = str(int(time()))
+                
+            try:
+                attachment_url = put_obj2storage(file_name = new_file_name, data = myfile['body'])
+            except:
+                attachment_url = ''
+            if attachment_url:
+                rspd['status'] = 200
+                rspd['filename'] = myfile['filename']
+                rspd['msg'] = attachment_url
+            else:
+                rspd['status'] = 500
+                rspd['msg'] = 'put_obj2storage erro, try it again.'
+        else:
+            rspd['msg'] = 'No file uploaded'
+        self.write(json.dumps(rspd))
+        return        
         
 class AddPost(BaseHandler):
     @authorized()
@@ -109,7 +144,7 @@ class AddPost(BaseHandler):
     def post(self):
         self.set_header('Content-Type','application/json')
         rspd = {'status': 201, 'msg':'ok'}
-        
+                
         try:
             tf = {'true':1,'false':0}
             timestamp = int(time())
@@ -311,7 +346,7 @@ class FlushData(BaseHandler):
         #MyData.creat_table()
         self.echo('admin_flushdata.html', {
             'title': "清空所有数据",
-        })        
+        })
 
 class PingRPCTask(BaseHandler):
     def get(self):
@@ -335,8 +370,13 @@ class PingRPC(BaseHandler):
             headers = headers,
             data = pingstr,
         )
+        try:
+            urllib2.urlopen(req)
+            tip = 'Ping ok'
+        except:
+            tip = 'ping erro'
         
-        urllib2.urlopen(req)
+        #add_task('default', '%s/task/sendmail'%BASE_URL, urlencode({'subject': tip, 'content': tip + " " + str(n)}))
 
 class SendMail(BaseHandler):
     def post(self):
@@ -373,4 +413,5 @@ urls = [
     (r"/task/pingrpc/(\d+)", PingRPC),
     (r"/task/sendmail", SendMail),
     (r"/install", Install),
+    (r"/admin/fileupload", FileUpload),
 ]

@@ -1,35 +1,37 @@
 <?py for _ in cache_as('sider', SIDER_TENJIN_CACHE): ?>
 
 <h1><a href="#{{BASE_URL}}">#{{SITE_TITLE2}}</a></h1>
-    <div id="sidebar1">
+	<div id="sidebar1">
 <?py include("gg_search.html") ?>
-        <h2 class="small">分类</h2>
-        <ul>
+		<h2 class="small">分类</h2>
+		<ul>
 <?py for cat in cats: ?>
-            <li class="cat-item cat-item-#{cat.name}"><a href="#{{BASE_URL}}/category/#{cat.name}/" title="View all posts filed under #{cat.name}">#{cat.name}</a></li>
+			<li class="cat-item cat-item-#{cat.name}"><a href="#{{BASE_URL}}/category/#{cat.name}/" title="View all posts filed under #{cat.name}">#{cat.name}</a></li>
 <?py #endfor ?>
-        </ul>
+		</ul>
 
 <h2 class="small">热门标签</h2>
-        <div class="sidertags">
+		<div class="sidertags">
 <?py for tagi in tags: ?>
 <a href="#{{BASE_URL}}/tag/#{tagi.name}/">#{tagi.name}</a>
 <?py #endfor ?>
+
 <div class="c"></div>
-        </div>
+
+		</div>
 
 <?py if 'comments' in _context and comments: ?>
-<h2 class="small">最近评论</h2>
+<h2 class="small" style="margin-top:10px;">最近评论</h2>
 
-        <ul class="comments">
-        <?py for each in comments: ?>
-        <li style="background: url('#{each.gravatar}?s=30&d=monsterid') no-repeat;">#{each.author} Says: <span class="grey">#{each.add_time}</span><br/><a href="#{{BASE_URL}}/t/#{each.postid}#r#{each.id}">#{each.short_content}</a></li>
-        <?py #endfor ?>
-        <div class="c"></div>       
-        </ul>
+		<ul class="comments">
+		<?py for each in comments: ?>
+		<li style="background: url('#{each.gravatar}?s=30&d=monsterid') no-repeat;">#{each.author} Says: <span class="grey">#{each.add_time}</span><br/><a href="#{{BASE_URL}}/t/#{each.postid}#r#{each.id}">#{each.short_content}</a></li>
+		<?py #endfor ?>
+		<div class="c"></div>		
+		</ul>
 <?py #endif ?>
 
 <?py include("links.html") ?>
 
-    </div>
+	</div>
 <?py #endfor ?>

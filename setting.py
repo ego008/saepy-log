@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from os import environ
 
+SAEPY_LOG_VERSION = '0.0.1' # 当前SAEpy-log版本
 APP_NAME = environ.get("APP_NAME", "")
 debug = not APP_NAME
 
@@ -21,6 +22,9 @@ MAIL_PASSWORD = 'xxxxxx'
 
 GOOGLE_ANALYTICS_ID = '' #Google Analytics ID，不用就留空
 GOOGLE_CSE_ID = '' #Google自定义搜索引擎ID，不用就留空
+
+#使用SAE Storage 服务（保存上传的附件），需在SAE管理面板创建
+STORAGE_DOMAIN_NAME = 'attachment' 
 
 ####友情链接列表，没有在管理界面实现，直接在这里修改
 LINK_BROLL = [

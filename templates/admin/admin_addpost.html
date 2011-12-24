@@ -7,9 +7,9 @@
 <link rel="stylesheet" type="text/css" href="/static/markitup/sets/html/style.css" />
 <script type="text/javascript">
 <!--
-$(document).ready(function()	{
-	// Add markItUp! to your textarea in one line
-	$('#html').markItUp(myHtmlSettings);
+$(document).ready(function()    {
+    // Add markItUp! to your textarea in one line
+    $('#html').markItUp(myHtmlSettings);
 });
 -->
 </script>
@@ -23,11 +23,12 @@ $(document).ready(function()	{
 <script type="text/javascript">
     jQuery(document).ready(function($) {
       $('a[rel*=facebox]').facebox()
-	  //$('a[rel*=facebox]').click(); 
+      //$('a[rel*=facebox]').click(); 
     })
 </script>
 
 <!-- /facebox -->
+
 <span id="h"></span>
 <h2>#{title}</h2>
 <p id="text" style="color:red;"></p>
@@ -36,7 +37,7 @@ $(document).ready(function()	{
 
 <p>*标题: <input type="text" id="tit" style="width:430px;" value="" tabindex="2" /> 100s</p>
 <textarea id="html" name="con" style="width:500px;height:300px;" tabindex="3"></textarea>
-图片最宽显示496px
+图片最宽显示496px | 上传图片或附件 <input id="filetoupload" type="file" size="45" name="filetoupload" class="input">
 <p>标签: <input type="text" id="tag" style="width:360px;" value="" tabindex="4" /> 100s 用逗号分隔','<br/>
 <a href="#tagdiv" rel="facebox[.thickstyle]">从最近标签中选择</a>
 </p>
@@ -49,67 +50,67 @@ $(document).ready(function()	{
 $('#submit').click(function(){
     
     var cat = $('#cat').val().replace(/(^\s*)|(\s*$)/g,"");
-	var tit = $('#tit').val().replace(/(^\s*)|(\s*$)/g,"");
-	var con = $('#html').val().replace(/(^\s*)|(\s*$)/g,"");
-	var tag = $('#tag').val().replace(/(^\s*)|(\s*$)/g,"");
-	var password = $('#password').val().replace(/(^\s*)|(\s*$)/g,"");
-	
-	var t = $('#text');
-	
-	if(cat.length< 1 || cat.length > 17){
-	    $('#cat').focus();
-		t.html("分类 必填 且最多可填17个字符");
-	    return;
-	}
-	
-	if(tit.length< 1 || tit.length > 100){
-	    $('#tit').focus();
-		t.html("标题 必填 且最多可填100个字符");
-	    return;
-	}
-	
-	if(con.length< 1){
-		document.getElementsByTagName('textarea')[0].focus();
-		t.html("内容 必填");
-	    return;
-	}
-		
-	if(tag.length > 100){
-	    $('#tag').focus();
-		t.html("标签最多可填100个字符");
-	    return;
-	}
-	
-	if(password.length > 8){
-	    $('#password').focus();
-		t.html("密码最多可设8个字符");
-	    return;
-	}
-		
-	$('#submit').attr('disabled', 'disabled');
-	t.html("Sending now.....");
-		
-	$.ajax({
-		type: 'POST',
-		url: '#{request.path}',
-		dataType: "json",		
-		data: {'cat': cat, 'clo': $('#clo').is(":checked"), 'tit': tit, 'con': con, 'tag': tag, 'password': password},
-		success: function(data){
-			t.html(data.status + ": "+ data.msg);
+    var tit = $('#tit').val().replace(/(^\s*)|(\s*$)/g,"");
+    var con = $('#html').val().replace(/(^\s*)|(\s*$)/g,"");
+    var tag = $('#tag').val().replace(/(^\s*)|(\s*$)/g,"");
+    var password = $('#password').val().replace(/(^\s*)|(\s*$)/g,"");
+    
+    var t = $('#text');
+    
+    if(cat.length< 1 || cat.length > 17){
+        $('#cat').focus();
+        t.html("分类 必填 且最多可填17个字符");
+        return;
+    }
+    
+    if(tit.length< 1 || tit.length > 100){
+        $('#tit').focus();
+        t.html("标题 必填 且最多可填100个字符");
+        return;
+    }
+    
+    if(con.length< 1){
+        document.getElementsByTagName('textarea')[0].focus();
+        t.html("内容 必填");
+        return;
+    }
+        
+    if(tag.length > 100){
+        $('#tag').focus();
+        t.html("标签最多可填100个字符");
+        return;
+    }
+    
+    if(password.length > 8){
+        $('#password').focus();
+        t.html("密码最多可设8个字符");
+        return;
+    }
+        
+    $('#submit').attr('disabled', 'disabled');
+    t.html("Sending now.....");
+        
+    $.ajax({
+        type: 'POST',
+        url: '#{request.path}',
+        dataType: "json",       
+        data: {'cat': cat, 'clo': $('#clo').is(":checked"), 'tit': tit, 'con': con, 'tag': tag, 'password': password},
+        success: function(data){
+            t.html(data.status + ": "+ data.msg);
             $('#submit').removeAttr("disabled");
-			scroll(0,$("#h").position().top);
-		}
-	});
+            scroll(0,$("#h").position().top);
+        }
+    });
 });
 
 function setcat(cat){
     var catField = document.getElementById('cat');
-	catField.value = cat;
+    catField.value = cat;
 }
 
 function settag(tag){
     var tagField = document.getElementById('tag');
-	tagField.value += tag + ",";
+    tagField.value += tag + ",";
 }
 
 </script>
@@ -127,5 +128,25 @@ function settag(tag){
 <a href="#" onclick="settag('#{tag.name}');return false;">#{tag.name}</a>, 
 <?py #endfor ?>
 </div>
+
+<!-- ajaxfileupload -->
+<script type="text/javascript" src="/static/jquery-plugin/jquery.upload-1.0.2.min.js"></script>
+<script type="text/javascript">
+$('#filetoupload').change(function() {
+    if($(this).val()){
+        $(this).upload('/admin/fileupload', function(res) {
+            if(res.status == 200){
+                var el = document.getElementById('html');
+                el.value += '\n' + res.msg + '\n附件：' + res.filename;
+                el.focus();
+            }else{
+                $(this).val("");
+                alert(res.msg);
+            }
+        }, 'json');
+    }
+});
+</script>
+<!-- /ajaxfileupload -->
 
 <?py include("admin_footer.html") ?>

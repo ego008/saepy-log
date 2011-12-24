@@ -38,7 +38,7 @@ $(document).ready(function()	{
 
 <p>*标题: <input type="text" id="tit" style="width:430px;" value="${obj.title}" tabindex="2" /> 100s</p>
 <textarea id="html" name="con" style="width:500px;height:300px;" tabindex="3">#{obj.content}</textarea>
-图片最宽显示496px
+图片最宽显示496px | 上传图片或附件 <input id="filetoupload" type="file" size="45" name="filetoupload" class="input">
 <p>标签: <input type="text" id="tag" style="width:360px;" value="${obj.tags}" tabindex="4" /> 100s 用逗号分隔','<br/>
 <a href="#tagdiv" rel="facebox[.thickstyle]">从最近标签中选择</a>
 </p>
@@ -135,9 +135,32 @@ function settag(tag){
 
 <div id="deldiv" style="display:none">
 <h4>你一定要删除这篇文章吗？</h4>
-<p>不推荐删除，建议 编辑文章 或 通过输入查看密码以屏蔽。</p>
+<p>不推荐删除，建议 编辑文章 或 通过设置查看密码以屏蔽。</p>
+<?py if STORAGE_DOMAIN_NAME in obj.content: ?>
+<p style="color:red">本文内容可能含有附件，若要删除附件请到SAE 后台删除。</p>
+<?py #endif ?>
 <p>我想好了，<a href="/admin/del_post/#{obj.id}">一定要删除它，不后悔</a>！！</p>
 </div>
+
+<!-- ajaxfileupload -->
+<script type="text/javascript" src="/static/jquery-plugin/jquery.upload-1.0.2.min.js"></script>
+<script type="text/javascript">
+$('#filetoupload').change(function() {
+    if($(this).val()){
+        $(this).upload('/admin/fileupload', function(res) {
+            if(res.status == 200){
+                var el = document.getElementById('html');
+                el.value += '\n' + res.msg + '\n附件：' + res.filename;
+				el.focus();
+            }else{
+                $(this).val("");
+                alert(res.msg);
+            }
+        }, 'json');
+    }
+});
+</script>
+<!-- /ajaxfileupload -->
 
 <?py else: ?>
 
