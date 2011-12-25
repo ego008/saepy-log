@@ -103,6 +103,7 @@ class Forbidden(BaseHandler):
         self.write('Forbidden page')
 
 class FileUpload(BaseHandler):
+    @authorized()
     def post(self):
         self.set_header('Content-Type','text/html')
         rspd = {'status': 201, 'msg':'ok'}
