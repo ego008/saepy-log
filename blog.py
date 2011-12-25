@@ -47,6 +47,7 @@ class HomePage(BaseHandler):
             'fromid': fromid,
             'endid': endid,
             'comments': Comment.get_recent_comments(),
+            'links':Link.get_all_links(),
         })
         return
 
@@ -76,6 +77,7 @@ class IndexPage(BaseHandler):
             'fromid': fromid,
             'endid': endid,
             'comments': Comment.get_recent_comments(),
+            'links':Link.get_all_links(),
         })        
         
 class PostDetailShort(BaseHandler):
@@ -114,6 +116,7 @@ class PostDetail(BaseHandler):
             'page': 1,
             'allpage': 10,
             'comments': Comment.get_recent_comments(),
+            'links':Link.get_all_links(),
         })
         
     def post(self, id = '', title = ''):
@@ -266,6 +269,7 @@ class CategoryDetail(BaseHandler):
             'name': name,
             'namemd5': md5(name.encode('utf-8')).hexdigest(),
             'comments': Comment.get_recent_comments(),
+            'links':Link.get_all_links(),
         })
 
 class TagDetail(BaseHandler):
@@ -298,6 +302,7 @@ class TagDetail(BaseHandler):
             'name': name,
             'namemd5': md5(name.encode('utf-8')).hexdigest(),
             'comments': Comment.get_recent_comments(),
+            'links':Link.get_all_links(),
         })
 
 class ArticleList(BaseHandler):
@@ -335,6 +340,7 @@ class ArticleList(BaseHandler):
             'name': name,
             'namemd5': md5(name.encode('utf-8')).hexdigest(),
             'comments': Comment.get_recent_comments(),
+            'links':Link.get_all_links(),
         })        
         
 class Robots(BaseHandler):

@@ -3,16 +3,27 @@
 <h2>#{title}</h2>
 
 <form action="" method="post">
-<p>Name: <input type="text" name="name" value="#{obj.name}" size="22" tabindex="1" />
-Sort: <input type="text" name="sort" value="#{obj.sort}" size="10" tabindex="2" /><br />
+<p>
+<?py if obj: ?>
+Name: <input type="text" name="name" value="#{obj.name}" size="22" tabindex="1" />
+Sort: <input type="text" name="sort" value="#{obj.displayorder}" size="10" tabindex="2" /><br />
 URL: <input type="text" name="url" value="#{obj.url}" size="46" tabindex="3" /> 
+<input type='hidden' value='edit' name='act' />
+<input type='hidden' value='#{obj.id}' name='id' />
+<?py else: ?>
+Name: <input type="text" name="name" value="" size="22" tabindex="1" />
+Sort: <input type="text" name="sort" value="0" size="10" tabindex="2" /><br />
+URL: <input type="text" name="url" value="" size="46" tabindex="3" /> 
+<input type='hidden' value='add' name='act' />
+<?py #endif ?>
 <input type="submit" class="bigbtn" tabindex="4" value=" Submit " /></p>
 </form>
 <br />
-<h2>Links broll</h2>
+<h2>友情链接列表</h2>
+【最多显示#{LINK_NUM}条，你可以在setting.py 里修改 LINK_NUM 值】
 <ul>
 <?py for i in objs: ?>
-<li><a href="#{i.url}" title="Link to #{i.url}" target="_blank">#{i.name}</a> ( <a href="/admin/link/#{i.key()}">Edit</a> | <a href="/admin/link/#{i.key()}?act=del">Delete</a> )</li>
+<li><a href="#{i.url}" title="Link to #{i.url}" target="_blank">#{i.name}</a> ( <a href="/admin/links?id=#{i.id}&act=edit">Edit</a> | <a href="/admin/links?id=#{i.id}&act=del">Delete</a> )</li>
 <?py #endfor ?>
 </ul>
 

@@ -1,8 +1,11 @@
-<?py if LINK_BROLL: ?>
+<?py if LINK_BROLL or links: ?>
 		<h2 class="small" style="margin-top:10px;">友情链接</h2>
 		<ul>
 <?py for link in LINK_BROLL: ?>
 			<li class="cat-item"><a href="#{link['url']}" target="_blank">#{link['text']}</a></li>
+<?py #endfor ?>
+<?py for link in links: ?>
+			<li class="cat-item"><a href="#{link['url']}" target="_blank">#{link['name']}</a></li>
 <?py #endfor ?>
 		</ul>
 

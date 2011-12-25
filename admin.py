@@ -336,6 +336,50 @@ class EditComment(BaseHandler):
         self.redirect('%s/admin/comment/%s'% (BASE_URL, id))
         return
 
+class LinkBroll(BaseHandler):
+    @authorized()
+    def get(self):
+        act = self.get_argument("act",'')
+        id = self.get_argument("id",'')
+        
+        obj = None
+        if act == 'del':
+            if id:
+                Link.del_link_by_id(id)
+                clear_sider_memcache()
+            self.redirect('%s/admin/links'% (BASE_URL))
+            return
+        elif act == 'edit':
+            if id:
+                obj = Link.get_link_by_id(id)
+                clear_sider_memcache()
+        self.echo('admin_link.html', {
+            'title': "管理友情链接",
+            'objs': Link.get_all_links(),
+            'obj': obj,
+        })        
+        
+    @authorized()
+    def post(self):
+        act = self.get_argument("act",'')
+        id = self.get_argument("id",'')
+        name = self.get_argument("name",'')
+        sort = self.get_argument("sort",'0')
+        url = self.get_argument("url",'')
+        
+        if name and url:
+            params = {'id': id, 'name': name, 'url': url, 'displayorder': sort}
+            if act == 'add':
+                Link.add_new_link(params)
+            
+            if act == 'edit':
+                Link.update_link_edit(params)
+            
+            clear_sider_memcache()
+                
+        self.redirect('%s/admin/links'% (BASE_URL))
+        return
+    
 class FlushData(BaseHandler):
     @authorized()
     def get(self):
@@ -415,4 +459,5 @@ urls = [
     (r"/task/sendmail", SendMail),
     (r"/install", Install),
     (r"/admin/fileupload", FileUpload),
+    (r"/admin/links", LinkBroll),
 ]

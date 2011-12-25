@@ -26,7 +26,7 @@ GOOGLE_CSE_ID = '' #Google自定义搜索引擎ID，不用就留空
 #使用SAE Storage 服务（保存上传的附件），需在SAE管理面板创建
 STORAGE_DOMAIN_NAME = 'attachment' 
 
-####友情链接列表，没有在管理界面实现，直接在这里修改
+####友情链接列表，在管理后台也实现了管理，下面的链接列表仍然有效并排在前面
 LINK_BROLL = [
     {"text": 'SAEpy blog', "url": 'http://saepy.sinaapp.com'},
     {"text": 'Sina App Engine', "url": 'http://sae.sina.com.cn/'},
@@ -74,7 +74,7 @@ SHORTEN_CONTENT_WORDS = 150 #文章列表截取的字符数
 DESCRIPTION_CUT_WORDS = 100 #meta description 显示的字符数
 RECENT_COMMENT_NUM = 5 #边栏显示最近评论数
 RECENT_COMMENT_CUT_WORDS = 20 #边栏评论显示字符数
-LINK_NUM = 20 #后台没实现友情链接管理，这个参数没用，保留备用
+LINK_NUM = 20 #边栏显示的友情链接数
 MAX_COMMENT_NUM_A_DAY = 10 #客户端设置Cookie 限制每天发的评论数
 
 ##以下是pyTenjin 模板引擎对页面片段的缓存时间，
