@@ -174,7 +174,7 @@ class Article():
         if direction == 'next':
             return post_list_format(sdb.query("SELECT * FROM `sp_posts` WHERE `id` < %s ORDER BY `id` DESC LIMIT %s" % (str(base_id), str(EACH_PAGE_POST_NUM))))
         else:
-            return post_list_format(sdb.query("SELECT * FROM `sp_posts` WHERE `id` > %s ORDER BY `id` DESC LIMIT %s" % (str(base_id), str(EACH_PAGE_POST_NUM))))
+            return post_list_format(sdb.query("SELECT * FROM `sp_posts` WHERE `id` > %s ORDER BY `id` ASC LIMIT %s" % (str(base_id), str(EACH_PAGE_POST_NUM))))
     
     def get_article_by_id_detail(self, id):
         sdb._ensure_connected()
@@ -293,7 +293,7 @@ Link = Link()
 class Category():
     def get_all_cat_name(self):
         sdb._ensure_connected()
-        return sdb.query('SELECT `name` FROM `sp_category` ORDER BY `id` DESC')
+        return sdb.query('SELECT `name`,`id_num` FROM `sp_category` ORDER BY `id` DESC')
         
     def get_all_cat(self):
         sdb._ensure_connected()
@@ -416,7 +416,7 @@ class Tag():
     def get_hot_tag_name(self):
         #for sider
         sdb._ensure_connected()
-        return sdb.query('SELECT `name` FROM `sp_tags` ORDER BY `id_num` DESC LIMIT %d' % HOT_TAGS_NUM)
+        return sdb.query('SELECT `name`,`id_num` FROM `sp_tags` ORDER BY `id_num` DESC LIMIT %d' % HOT_TAGS_NUM)
     
     def get_tag_by_name(self, name = ''):
         sdb._ensure_connected()

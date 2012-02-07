@@ -53,8 +53,13 @@ class HomePage(BaseHandler):
 
 class IndexPage(BaseHandler):
     def get(self, direction = 'next', page = '2', base_id = '1'):
+        if page == '1':
+            self.redirect(BASE_URL)
+            return        
         objs = Article.get_page_posts(direction, page, base_id)
         if objs:
+            if direction == 'prev':
+                objs.reverse()            
             fromid = objs[0].id
             endid = objs[-1].id
         else:
