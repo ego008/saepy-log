@@ -10,9 +10,9 @@ myHtmlSettings = {
     onCtrlEnter:     {keepDefault:false, openWith:'\n<p>', closeWith:'</p>\n'},
     onTab:           {keepDefault:false, openWith:'     '},
     markupSet:  [
-        {name:'Heading 3', key:'3', openWith:'<h3(!( class="[![Class]!]")!)>', closeWith:'</h3>', placeHolder:'Your title here...' },
-        {name:'Heading 4', key:'4', openWith:'<h4(!( class="[![Class]!]")!)>', closeWith:'</h4>', placeHolder:'Your title here...' },
-        {name:'Heading 5', key:'5', openWith:'<h5(!( class="[![Class]!]")!)>', closeWith:'</h5>', placeHolder:'Your title here...' },
+        {name:'Heading 3', key:'3', openWith:'<h3(!( class="[![Class]!]")!)>', closeWith:'</h3> ', placeHolder:'Your title here...' },
+        {name:'Heading 4', key:'4', openWith:'<h4(!( class="[![Class]!]")!)>', closeWith:'</h4> ', placeHolder:'Your title here...' },
+        {name:'Heading 5', key:'5', openWith:'<h5(!( class="[![Class]!]")!)>', closeWith:'</h5> ', placeHolder:'Your title here...' },
         {separator:'---------------' },
         {name:'Bold', key:'B', openWith:'<strong>', closeWith:'</strong> ' },
         {name:'Italic', key:'I', openWith:'<em>', closeWith:'</em> '  },
@@ -33,17 +33,16 @@ myHtmlSettings = {
             ]        	
         },        
         {separator:'---------------' },
-        {name:'Ul', openWith:'<ul>\n', closeWith:'</ul> \n' },
-        {name:'Ol', openWith:'<ol>\n', closeWith:'</ol> \n' },
-        {name:'Li', openWith:'<li>', closeWith:'</li>' },
+        {name:'Ul', openWith:'<ul>\n', closeWith:'</ul>\n' },
+        {name:'Ol', openWith:'<ol>\n', closeWith:'</ol>\n' },
+        {name:'Li', openWith:'<li>', closeWith:'</li> ' },
         {separator:'---------------' },
-        {name:'Picture', key:'P', replaceWith:'<img src="[![Source:!:http://]!]" alt="[![Alternative text]!]" />' },
-        {name:'Link', key:'L', openWith:'<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!) rel="nofollow" target="_blank">', closeWith:'</a> ', placeHolder:'Your text to link...' },
+        {name:'Picture', key:'P', replaceWith:'<img src="[![Source:!:http://]!]" alt="[![Alternative text]!]" /> ' },
+        {name:'Link', key:'L', openWith:'<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!) target="_blank">', closeWith:'</a> ', placeHolder:'Your text to link...' },
         {separator:'---------------' },
         {name:'Quotes', openWith:'<blockquote>', closeWith:'</blockquote> '},
         {name:'Code', openWith:'[code]', closeWith:'[/code]'},        
         {name:'Clean', replaceWith:function(h) { return h.selection.replace(/<(.*?)>/g, "") } },
-        {name:'Cut', openWith:'\n <!--more--> \n', closeWith:'' },
-        {name:'Preview', call:'preview', className:'preview' }
+        {name:'Cut', openWith:'\n <!--more--> \n', closeWith:'' }
     ]
 }

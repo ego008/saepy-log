@@ -13,7 +13,7 @@ from time import time
 from datetime import datetime,timedelta
 from urllib import urlencode
 
-from common import BaseHandler, authorized, safe_encode, clear_article_memcache, clear_sider_memcache, clear_index_memcache, cnnow
+from common import BaseHandler, authorized, safe_encode, cnnow, clear_cache_by_pathlist, quoted_string, clear_all_cache
 
 from setting import *
 from model import Article, Comment, Link, Category, Tag, User, MyData
@@ -24,31 +24,31 @@ if not debug:
     import sae.storage
     
 ######
-def put_obj2storage(file_name = '', data = '', domain_name = STORAGE_DOMAIN_NAME):
+def put_obj2storage(file_name = '', data = '', expires='365', type=None, encoding= None, domain_name = STORAGE_DOMAIN_NAME):
     s = sae.storage.Client()
-    ob = sae.storage.Object(data = data)
+    #ob = sae.storage.Object(data = data, expires='access plus %s day' % expires, type= type, encoding= encoding)
+    ob = sae.storage.Object(data = data, cache_control='access plus %s day' % expires, content_type= type, content_encoding= encoding)
     return s.put(domain_name, file_name, ob)
     
 ######
 class HomePage(BaseHandler):
     @authorized()
     def get(self):
-        #add_task('default', '%s/task/pingrpctask'%BASE_URL)
-        #logging.error(self.request.headers)
-        self.echo('admin_index.html', {
+        output = self.render('admin_index.html', {
             'title': "%s - %s"%(SITE_TITLE,SITE_SUB_TITLE),
             'keywords':KEYWORDS,
             'description':SITE_DECR,
             'test': '',
-        })
-        return
+        },layout='_layout_admin.html')
+        self.write(output)
+        return output
     
 class Login(BaseHandler):
     def get(self):
         self.echo('admin_login.html', {
             'title': "管理员登录",
             'has_user': User.check_has_user()
-        })
+        },layout='_layout_admin.html')
 
     def post(self):
         try:
@@ -112,14 +112,29 @@ class FileUpload(BaseHandler):
         if filetoupload:
             myfile = filetoupload[0]
             try:
-                new_file_name = "%s.%s"% (str(int(time())),myfile['filename'].split('.')[-1].lower())
+                file_type = myfile['filename'].split('.')[-1].lower()
+                new_file_name = "%s.%s"% (str(int(time())), file_type)
             except:
+                file_type = ''
                 new_file_name = str(int(time()))
-                
+            ##
+            CONTENT_TYPES = set([
+                    "text/plain", "text/html", "text/css", "text/xml", "application/javascript", 
+                    "application/x-javascript", "application/xml", "application/atom+xml",
+                    "text/javascript", "application/json", "application/xhtml+xml"])
+            mime_type = myfile['content_type']
+            
+            if mime_type in CONTENT_TYPES:
+                encoding = None#'gzip'
+            else:
+                encoding = None
+            ###
+            
             try:
-                attachment_url = put_obj2storage(file_name = new_file_name, data = myfile['body'])
+                attachment_url = put_obj2storage(file_name = new_file_name, data = myfile['body'], expires='365', type= mime_type, encoding= encoding)
             except:
                 attachment_url = ''
+            
             if attachment_url:
                 rspd['status'] = 200
                 rspd['filename'] = myfile['filename']
@@ -139,7 +154,7 @@ class AddPost(BaseHandler):
             'title': "添加文章",
             'cats': Category.get_all_cat_name(),
             'tags': Tag.get_all_tag_name(),
-        })        
+        },layout='_layout_admin.html')        
     
     @authorized()
     def post(self):
@@ -183,8 +198,7 @@ class AddPost(BaseHandler):
             
             rspd['status'] = 200
             rspd['msg'] = '完成： 你已经成功添加了一篇文章 <a href="/t/%s" target="_blank">查看</a>' % str(postid)
-            clear_sider_memcache()
-            clear_index_memcache()
+            clear_cache_by_pathlist(['/', 'cat:%s' % quoted_string(post_dic['category'])])
             
             if not debug:
                 add_task('default', '%s/task/pingrpctask'%BASE_URL)
@@ -208,7 +222,7 @@ class EditPost(BaseHandler):
             'cats': Category.get_all_cat_name(),
             'tags': Tag.get_all_tag_name(),
             'obj': obj
-        })        
+        },layout='_layout_admin.html')        
     
     @authorized()
     def post(self, id = ''):
@@ -253,10 +267,12 @@ class EditPost(BaseHandler):
         
         postid = Article.update_post_edit(post_dic)
         if postid:
+            cache_key_list = ['/', 'post:%s'% id, 'cat:%s' % quoted_string(oldobj.category)]
             if oldobj.category != post_dic['category']:
                 #cat changed 
                 Category.add_postid_to_cat(post_dic['category'], str(postid))
                 Category.remove_postid_from_cat(post_dic['category'], str(postid))
+                cache_key_list.append('cat:%s' % quoted_string(post_dic['category']))
             
             if oldobj.tags != post_dic['tags']:
                 #tag changed 
@@ -274,7 +290,7 @@ class EditPost(BaseHandler):
                     for tag in removed_tags:
                         Tag.remove_postid_from_tag(tag, str(postid))
             
-            clear_article_memcache(id)
+            clear_cache_by_pathlist(cache_key_list)
             rspd['status'] = 200
             rspd['msg'] = '完成： 你已经成功编辑了一篇文章 <a href="/t/%s" target="_blank">查看编辑后的文章</a>' % str(postid)
             self.write(json.dumps(rspd))
@@ -289,8 +305,7 @@ class DelPost(BaseHandler):
     @authorized()
     def get(self, id = ''):
         Article.del_post_by_id(id)
-        clear_sider_memcache()
-        clear_article_memcache(id)
+        clear_cache_by_pathlist(['post:%s'%id])
         self.redirect('%s/admin/edit_post/'% (BASE_URL))
     
 class EditComment(BaseHandler):
@@ -303,6 +318,7 @@ class EditComment(BaseHandler):
                 act = self.get_argument("act",'')
                 if act == 'del':
                     Comment.del_comment_by_id(id)
+                    clear_cache_by_pathlist(['post:%d'%obj.postid])
                     self.redirect('%s/admin/comment/'% (BASE_URL))
                     return
         self.echo('admin_comment.html', {
@@ -311,7 +327,7 @@ class EditComment(BaseHandler):
             'tags': Tag.get_all_tag_name(),
             'obj': obj,
             'comments': Comment.get_recent_comments(),
-        })        
+        },layout='_layout_admin.html')        
     
     @authorized()
     def post(self, id = ''):
@@ -333,6 +349,7 @@ class EditComment(BaseHandler):
         post_dic['visible'] = tf[post_dic['visible'].lower()]
         
         Comment.update_comment_edit(post_dic)
+        clear_cache_by_pathlist(['post:%s'%id])
         self.redirect('%s/admin/comment/%s'% (BASE_URL, id))
         return
 
@@ -346,18 +363,18 @@ class LinkBroll(BaseHandler):
         if act == 'del':
             if id:
                 Link.del_link_by_id(id)
-                clear_sider_memcache()
+                clear_cache_by_pathlist(['/'])
             self.redirect('%s/admin/links'% (BASE_URL))
             return
         elif act == 'edit':
             if id:
                 obj = Link.get_link_by_id(id)
-                clear_sider_memcache()
+                clear_cache_by_pathlist(['/'])
         self.echo('admin_link.html', {
             'title': "管理友情链接",
             'objs': Link.get_all_links(),
             'obj': obj,
-        })        
+        },layout='_layout_admin.html')        
         
     @authorized()
     def post(self):
@@ -375,23 +392,28 @@ class LinkBroll(BaseHandler):
             if act == 'edit':
                 Link.update_link_edit(params)
             
-            clear_sider_memcache()
-                
+            clear_cache_by_pathlist(['/'])
+            
         self.redirect('%s/admin/links'% (BASE_URL))
         return
-    
+
 class FlushData(BaseHandler):
     @authorized()
     def get(self):
         act = self.get_argument("act",'')
         if act == 'flush':
             MyData.flush_all_data()
+            clear_all_cache()
             self.redirect('/admin/flushdata')
             return
-        #MyData.creat_table()
+        elif act == 'flushcache':
+            clear_all_cache()
+            self.redirect('/admin/flushdata')
+            return
+        
         self.echo('admin_flushdata.html', {
-            'title': "清空所有数据",
-        })
+            'title': "清空缓存/数据",
+        },layout='_layout_admin.html')
 
 class PingRPCTask(BaseHandler):
     def get(self):
@@ -429,11 +451,12 @@ class SendMail(BaseHandler):
         content = self.get_argument("content",'')
         
         if subject and content:
-            sae.mail.send_mail(NOTICE_MAIL, subject, content,(MAIL_SMTP, MAIL_PORT, MAIL_FROM, MAIL_PASSWORD, True))
+            sae.mail.send_mail(NOTICE_MAIL, subject, content,(MAIL_SMTP, int(MAIL_PORT), MAIL_FROM, MAIL_PASSWORD, True))
 
 class Install(BaseHandler):
     def get(self):
         try:
+            self.write('如果出现错误请尝试刷新本页。')
             has_user = User.check_has_user()
             if has_user:
                 self.write('博客已经成功安装了，你可以直接 <a href="/admin/flushdata">清空网站数据</a>')
@@ -442,7 +465,17 @@ class Install(BaseHandler):
         except:
             MyData.creat_table()
             self.write('博客已经成功安装了，现在就去 <a href="/admin/">设置一个管理员帐号</a>')
-        
+
+class NotFoundPage(BaseHandler):
+    def get(self):
+        self.set_status(404)
+        self.echo('error.html', {
+            'page': '404',
+            'title': "Can't find out this URL",
+            'h2': 'Oh, my god!',
+            'msg': 'Something seems to be lost...'
+        })
+
 #####
 urls = [
     (r"/admin/", HomePage),
@@ -460,4 +493,5 @@ urls = [
     (r"/install", Install),
     (r"/admin/fileupload", FileUpload),
     (r"/admin/links", LinkBroll),
+    (r".*", NotFoundPage)
 ]

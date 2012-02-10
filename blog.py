@@ -2,27 +2,26 @@
 
 import logging
 
-try:
-    import json
-except:
-    import simplejson as json
+import json
     
 from hashlib import md5
 from time import time
 
 from setting import *
-from common import BaseHandler, unquoted_unicode, quoted_string, safe_encode, slugfy, clear_article_memcache, clear_sider_memcache
+
+from common import BaseHandler, unquoted_unicode, quoted_string, safe_encode, slugfy, pagecache, clear_cache_by_pathlist
 
 from model import Article, Comment, Link, Category, Tag
 
 ###############
-
-###############
 class HomePage(BaseHandler):
+    @pagecache()
     def get(self):
-        #self.write('ok?')
-        #return
-        objs = Article.get_post_for_homepage()
+        try:
+            objs = Article.get_post_for_homepage()
+        except:
+            self.redirect('/install')
+            return
         if objs:
             fromid = objs[0].id
             endid = objs[-1].id
@@ -33,8 +32,8 @@ class HomePage(BaseHandler):
         allpage = allpost/EACH_PAGE_POST_NUM
         if allpost%EACH_PAGE_POST_NUM:
             allpage += 1
-            
-        self.echo('index.html', {
+        
+        output = self.render('index.html', {
             'title': "%s - %s"%(SITE_TITLE,SITE_SUB_TITLE),
             'keywords':KEYWORDS,
             'description':SITE_DECR,
@@ -48,14 +47,16 @@ class HomePage(BaseHandler):
             'endid': endid,
             'comments': Comment.get_recent_comments(),
             'links':Link.get_all_links(),
-        })
-        return
+        },layout='_layout.html')
+        self.write(output)
+        return output
 
 class IndexPage(BaseHandler):
+    @pagecache('post_list_index', PAGE_CACHE_TIME, lambda self,direction,page,base_id: page)
     def get(self, direction = 'next', page = '2', base_id = '1'):
         if page == '1':
             self.redirect(BASE_URL)
-            return        
+            return
         objs = Article.get_page_posts(direction, page, base_id)
         if objs:
             if direction == 'prev':
@@ -69,7 +70,7 @@ class IndexPage(BaseHandler):
         allpage = allpost/EACH_PAGE_POST_NUM
         if allpost%EACH_PAGE_POST_NUM:
             allpage += 1
-        self.echo('index.html', {
+        output = self.render('index.html', {
             'title': "%s - %s | Part %s"%(SITE_TITLE,SITE_SUB_TITLE, page),
             'keywords':KEYWORDS,
             'description':SITE_DECR,
@@ -83,7 +84,9 @@ class IndexPage(BaseHandler):
             'endid': endid,
             'comments': Comment.get_recent_comments(),
             'links':Link.get_all_links(),
-        })        
+        },layout='_layout.html')
+        self.write(output)
+        return output
         
 class PostDetailShort(BaseHandler):
     def get(self, id = ''):
@@ -95,21 +98,21 @@ class PostDetailShort(BaseHandler):
             self.redirect(BASE_URL)
 
 class PostDetail(BaseHandler):
+    @pagecache('post', PAGE_CACHE_TIME, lambda self,id,title: id)
     def get(self, id = '', title = ''):
         tmpl = ''
         obj = Article.get_article_by_id_detail(id)
         if not obj:
             self.redirect(BASE_URL)
             return
-        if obj.password:
+        if obj.password and 'default' in THEMES:
             rp = self.get_cookie("rp%s" % id, '')
             if rp != obj.password:
                 tmpl = '_pw'
         
-        if self.is_spider():
-            self.set_header("Last-Modified", obj.last_modified)
+        self.set_header("Last-Modified", obj.last_modified)
             
-        self.echo('page%s.html'%tmpl, {
+        output = self.render('page%s.html'%tmpl, {
             'title': "%s - %s"%(obj.title, SITE_TITLE),
             'keywords':obj.keywords,
             'description':obj.description,
@@ -122,7 +125,13 @@ class PostDetail(BaseHandler):
             'allpage': 10,
             'comments': Comment.get_recent_comments(),
             'links':Link.get_all_links(),
-        })
+        },layout='_layout.html')
+        self.write(output)
+        
+        if obj.password and 'default' in THEMES:
+            return
+        else:
+            return output
         
     def post(self, id = '', title = ''):
         action = self.get_argument("act")
@@ -210,25 +219,29 @@ class PostDetail(BaseHandler):
                         'visible': post_dic['visible'],
                         'content': post_dic['content'],
                     })
-                    
-                clear_article_memcache(id)
-                clear_sider_memcache()
+                
+                clear_cache_by_pathlist(['/','post:%s'%id])
                 #send mail
-                try:
-                    tolist = NOTICE_MAIL
-                    if post_dic['toid']:
-                        tcomment = Comment.get_comment_by_id(toid)
-                        if tcomment and tcomment.email:
-                            tolist = tcomment.email
-                    commenturl = "%s/t/%s#r%s" % (BASE_URL, str(pobj.id), str(cobjid))
-                    m_subject = u'有人回复您在 《%s》 里的评论 %s' % ( pobj.title,str(cobjid))
-                    m_html = u'这是一封提醒邮件（请勿直接回复）： %s ，请尽快处理： %s' % (m_subject, commenturl)
-                    
-                    import sae.mail
-                    sae.mail.send_mail(tolist, m_subject, m_html,(MAIL_SMTP, MAIL_PORT, MAIL_FROM, MAIL_PASSWORD, True))          
-                    
-                except:
-                    pass
+                if not debug:
+                    try:
+                        if NOTICE_MAIL:
+                            tolist = [NOTICE_MAIL]
+                        else:
+                            tolist = []
+                        if post_dic['toid']:
+                            tcomment = Comment.get_comment_by_id(toid)
+                            if tcomment and tcomment.email:
+                                tolist.append(tcomment.email)
+                        commenturl = "%s/t/%s#r%s" % (BASE_URL, str(pobj.id), str(cobjid))
+                        m_subject = u'有人回复您在 《%s》 里的评论 %s' % ( pobj.title,str(cobjid))
+                        m_html = u'这是一封提醒邮件（请勿直接回复）： %s ，请尽快处理： %s' % (m_subject, commenturl)
+                        
+                        if tolist:
+                            import sae.mail
+                            sae.mail.send_mail(','.join(tolist), m_subject, m_html,(MAIL_SMTP, int(MAIL_PORT), MAIL_FROM, MAIL_PASSWORD, True))          
+                        
+                    except:
+                        pass
             else:
                 rspd['msg'] = '错误： 未知错误'
         else:
@@ -245,6 +258,7 @@ class CategoryDetailShort(BaseHandler):
             self.redirect(BASE_URL)
 
 class CategoryDetail(BaseHandler):
+    @pagecache('cat', PAGE_CACHE_TIME, lambda self,name: name)
     def get(self, name = ''):
         objs = Category.get_cat_page_posts(name, 1)
         
@@ -255,13 +269,12 @@ class CategoryDetail(BaseHandler):
             self.redirect(BASE_URL)
             return
         
-        #allpost =  len(catobj.content.split(','))
         allpost =  catobj.id_num
         allpage = allpost/EACH_PAGE_POST_NUM
         if allpost%EACH_PAGE_POST_NUM:
             allpage += 1
             
-        self.echo('index2.html', {
+        output = self.render('index.html', {
             'title': "%s - %s"%( catobj.name, SITE_TITLE),
             'keywords':catobj.name,
             'description':SITE_DECR,
@@ -275,9 +288,12 @@ class CategoryDetail(BaseHandler):
             'namemd5': md5(name.encode('utf-8')).hexdigest(),
             'comments': Comment.get_recent_comments(),
             'links':Link.get_all_links(),
-        })
+        },layout='_layout.html')
+        self.write(output)
+        return output
 
 class TagDetail(BaseHandler):
+    @pagecache()
     def get(self, name = ''):
         objs = Tag.get_tag_page_posts(name, 1)
         
@@ -288,13 +304,12 @@ class TagDetail(BaseHandler):
             self.redirect(BASE_URL)
             return
         
-        #allpost =  len(catobj.content.split(','))
         allpost =  catobj.id_num
         allpage = allpost/EACH_PAGE_POST_NUM
         if allpost%EACH_PAGE_POST_NUM:
             allpage += 1
             
-        self.echo('index2.html', {
+        output = self.render('index.html', {
             'title': "%s - %s"%( catobj.name, SITE_TITLE),
             'keywords':catobj.name,
             'description':SITE_DECR,
@@ -308,9 +323,13 @@ class TagDetail(BaseHandler):
             'namemd5': md5(name.encode('utf-8')).hexdigest(),
             'comments': Comment.get_recent_comments(),
             'links':Link.get_all_links(),
-        })
+        },layout='_layout.html')
+        self.write(output)
+        return output
+        
 
 class ArticleList(BaseHandler):
+    @pagecache('post_list_tag', PAGE_CACHE_TIME, lambda self,listtype,direction,page,name: "%s_%s"%(name,page))
     def get(self, listtype = '', direction = 'next', page = '1', name = ''):
         if listtype == 'cat':
             objs = Category.get_cat_page_posts(name, page)
@@ -326,13 +345,12 @@ class ArticleList(BaseHandler):
             self.redirect(BASE_URL)
             return
         
-        #allpost =  len(catobj.content.split(','))
         allpost =  catobj.id_num
         allpage = allpost/EACH_PAGE_POST_NUM
         if allpost%EACH_PAGE_POST_NUM:
             allpage += 1
             
-        self.echo('index2.html', {
+        output = self.render('index.html', {
             'title': "%s - %s | Part %s"%( catobj.name, SITE_TITLE, page),
             'keywords':catobj.name,
             'description':SITE_DECR,
@@ -346,7 +364,10 @@ class ArticleList(BaseHandler):
             'namemd5': md5(name.encode('utf-8')).hexdigest(),
             'comments': Comment.get_recent_comments(),
             'links':Link.get_all_links(),
-        })        
+        },layout='_layout.html')
+        self.write(output)
+        return output
+        
         
 class Robots(BaseHandler):
     def get(self):
@@ -366,18 +387,25 @@ class Sitemap(BaseHandler):
     def get(self, id = ''):
         self.set_header('Content-Type','text/xml')
         self.echo('sitemap.html', {'sitemapstr':Category.get_sitemap_by_id(id), 'id': id})
+
+class Attachment(BaseHandler):
+    def get(self, name):
+        self.redirect('http://%s-%s.stor.sinaapp.com/%s'% (APP_NAME, STORAGE_DOMAIN_NAME, unquoted_unicode(name)), 301)
+        return
         
 ########
 urls = [
     (r"/", HomePage),
     (r"/robots.txt", Robots),
     (r"/feed", Feed),
+    (r"/index.xml", Feed),
     (r"/t/(\d+)$", PostDetailShort),
     (r"/topic/(\d+)/(.*)$", PostDetail),
-    (r"/index_(prev|next)_page/(\d+)/(\d+)$", IndexPage),
+    (r"/index_(prev|next)_page/(\d+)/(\d+)/$", IndexPage),
     (r"/c/(\d+)$", CategoryDetailShort),
     (r"/category/(.+)/$", CategoryDetail),
     (r"/tag/(.+)/$", TagDetail),
     (r"/(cat|tag)_(prev|next)_page/(\d+)/(.+)/$", ArticleList),
     (r"/sitemap_(\d+)\.xml$", Sitemap),
+    (r"/attachment/(.+)$", Attachment),
 ]

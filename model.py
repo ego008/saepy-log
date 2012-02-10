@@ -6,7 +6,7 @@ from hashlib import md5
 from time import time
 from datetime import datetime
 
-from common import slugfy, time_from_now, cnnow, timestamp_to_datetime, safe_encode
+from common import slugfy, time_from_now, cnnow, memcached, timestamp_to_datetime, safe_encode
 from setting import *
 
 try:
@@ -28,8 +28,8 @@ else:
     MYSQL_HOST_S = sae.const.MYSQL_HOST_S
     MYSQL_PORT = sae.const.MYSQL_PORT
     
-#主数据库 为更新
-#从数据库 为读取
+#主数据库 进行Create,Update,Delete 操作
+#从数据库 读取
 
 ##
 HTML_REG = re.compile(r"""<[^>]+>""", re.I|re.M|re.S)
@@ -41,7 +41,7 @@ sdb = database.Connection("%s:%s"%(MYSQL_HOST_S,str(MYSQL_PORT)), MYSQL_DB,MYSQL
 CODE_RE = re.compile(r"""\[code\](.+?)\[/code\]""",re.I|re.M|re.S)
 
 def n2br(text):
-    con = text.replace('\n<','<').replace('>\n\n','>').replace('>\n','>')
+    con = text.replace('>\n\n','>').replace('>\n','>')
     con = "<p>%s</p>"%('</p><p>'.join(con.split('\n\n')))
     return '<br/>'.join(con.split("\n"))    
     
@@ -139,14 +139,18 @@ def comment_format(objs):
     for obj in objs:
         obj.gravatar = 'http://www.gravatar.com/avatar/%s'%md5(obj.email).hexdigest()
         obj.add_time = time_from_now(int(obj.add_time))
-        obj.content = obj.content.replace('\n','<br/>')
+        
         if obj.visible:
             obj.short_content = HTML_REG.sub('',obj.content[:RECENT_COMMENT_CUT_WORDS])
         else:
             obj.short_content = 'Your comment is awaiting moderation.'[:RECENT_COMMENT_CUT_WORDS]
+        
+        obj.content = obj.content.replace('\n','<br/>')
     return objs
 
-###
+###以下是各个数据表的操作
+
+###########
 
 class Article():
     def get_last_post_add_time(self):
@@ -197,7 +201,7 @@ class Article():
         query = "UPDATE `sp_posts` SET `category` = %s, `title` = %s, `content` = %s, `closecomment` = %s, `tags` = %s, `password` = %s, `edit_time` = %s WHERE `id` = %s LIMIT 1"
         mdb._ensure_connected()
         mdb.execute(query, params['category'], params['title'], params['content'], params['closecomment'], params['tags'], params['password'], params['edit_time'], params['id'])
-        ### update 暂时返回不了 lastrowid，直接返回 post id 代替
+        ### update 返回不了 lastrowid，直接返回 post id
         return params['id']
             
     def update_post_comment(self, num = 1,id = ''):
@@ -259,7 +263,7 @@ class Comment():
         query = "UPDATE `sp_comments` SET `author` = %s, `email` = %s, `url` = %s, `visible` = %s, `content` = %s WHERE `id` = %s LIMIT 1"
         mdb._ensure_connected()
         mdb.execute(query, params['author'], params['email'], params['url'], params['visible'], params['content'], params['id'])
-        ### update 暂时返回不了 lastrowid，直接返回 post id 代替
+        ### update 返回不了 lastrowid，直接返回 id
         return params['id']
     
 
@@ -392,7 +396,6 @@ class Category():
         
         urllist.append(urlstr%( "%s/c/%s" % (BASE_URL, str(obj.id)), cnnow().strftime("%Y-%m-%dT%H:%M:%SZ"), 'daily', '0.8'))
         
-        #ids = obj.content.split(',')
         objs = Article.get_post_for_sitemap(obj.content.split(','))
         for p in objs:
             if p:
@@ -431,12 +434,12 @@ class Tag():
         
     def get_tag_page_posts(self, name = '', page = 1, limit = EACH_PAGE_POST_NUM):
         obj = self.get_tag_by_name(name)
-        if obj:
+        if obj and obj.content:
             page = int(page)
             idlist = obj.content.split(',')
             getids = idlist[limit*(page-1):limit*page]
             sdb._ensure_connected()
-            return post_list_format(sdb.query("SELECT * FROM `sp_posts` WHERE `id` in(%s) ORDER BY `id` DESC LIMIT %s" % (','.join(getids), str(len(getids)))))
+            return post_list_format(sdb.query("SELECT * FROM `sp_posts` WHERE `id` in(%s) ORDER BY `id` DESC LIMIT %s" % (','.join(getids), len(getids))))
         else:
             return []
             

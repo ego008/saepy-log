@@ -5,7 +5,7 @@ import os.path
 from traceback import format_exc
 from urllib import unquote, quote, urlencode
 from urlparse import urljoin, urlunsplit
-#from os import environ
+
 from datetime import datetime, timedelta
 
 import tenjin
@@ -13,10 +13,18 @@ from tenjin.helpers import *
 
 from setting import *
 
-try:
-    import tornado
-except:
-    pass
+import tornado.web
+
+
+#Memcache 是否可用、用户是否在后台初始化Memcache
+MC_Available = False
+if PAGE_CACHE:
+    import pylibmc
+    mc = pylibmc.Client() #只需初始化一次？
+    try:
+        MC_Available = mc.set('mc_available', '1', 3600)
+    except:
+        pass
 
 #####
 def slugfy(text, separator='-'):
@@ -49,12 +57,6 @@ def unquoted_unicode(string, coding='utf-8'):
 
 def quoted_string(unicode, coding='utf-8'):
     return quote(unicode.encode(coding))
-
-def ping_hubs(feed):
-    pass
-
-def ping_xml_rpc(article_url):
-    pass
 
 def cnnow():
     return datetime.utcnow() + timedelta(hours =+ 8)
@@ -98,43 +100,98 @@ def time_from_now(time):
         return '%s seconds ago' %seconds
     return '%s second ago' % seconds
 
-def clear_article_memcache(id=''):
-    tenjin.helpers.fragment_cache.store.delete('post_%s' % str(id))
-    tenjin.helpers.fragment_cache.store.delete('post_comments_%s' % str(id))
+def clear_cache_by_pathlist(pathlist = []):
+    if pathlist and MC_Available:
+        try:
+            mc = pylibmc.Client()
+            mc.delete_multi([str(p) for p in pathlist])
+        except:
+            pass
 
-def clear_sider_memcache():
-    tenjin.helpers.fragment_cache.store.delete('sider')
-
-def clear_index_memcache():
-    tenjin.helpers.fragment_cache.store.delete('index_1')
+def clear_all_cache():
+    if PAGE_CACHE:
+        try:
+            mc = pylibmc.Client()
+            mc.flush_all()
+        except:
+            pass
+    else:
+        pass
     
 def format_date(dt):
-	return dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
+    return dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+
+def memcached(key, cache_time=0, key_suffix_calc_func=None):
+    def wrap(func):
+        def cached_func(*args, **kw):
+            if not MC_Available:
+                return func(*args, **kw)
+            
+            key_with_suffix = key
+            if key_suffix_calc_func:
+                key_suffix = key_suffix_calc_func(*args, **kw)
+                if key_suffix is not None:
+                    key_with_suffix = '%s:%s' % (key, key_suffix)
+            
+            mc = pylibmc.Client()
+            value = mc.get(key_with_suffix)
+            if value is None:
+                value = func(*args, **kw)
+                try:
+                    mc.set(key_with_suffix, value, cache_time)
+                except:
+                    pass
+            return value
+        return cached_func
+    return wrap
+
+RQT_RE = re.compile('<span id="requesttime">\d*</span>', re.I)
+def pagecache(key="", time=PAGE_CACHE_TIME, key_suffix_calc_func=None):
+    def _decorate(method):
+        def _wrapper(*args, **kwargs):
+            if not MC_Available:
+                method(*args, **kwargs)
+                return
+            
+            req = args[0]
+            
+            key_with_suffix = key
+            if key_suffix_calc_func:
+                key_suffix = key_suffix_calc_func(*args, **kwargs)
+                if key_suffix:
+                    key_with_suffix = '%s:%s' % (key, quoted_string(key_suffix)) 
+            
+            if key_with_suffix:
+                key_with_suffix = str(key_with_suffix)
+            else:
+                key_with_suffix = req.request.path
+                
+            mc = pylibmc.Client()
+            html = mc.get(key_with_suffix)
+            request_time = int(req.request.request_time()*1000)
+            if html:
+                req.write(RQT_RE.sub('<span id="requesttime">%d</span>'%request_time, html))
+            else:
+                result = method(*args, **kwargs)
+                mc.set(key_with_suffix, result, time)
+        return _wrapper
+    return _decorate
 
 ###
-engine = tenjin.Engine(path=[os.path.join('templates', theme) for theme in THEMES] + ['templates'], cache=tenjin.MemoryCacheStorage(), preprocess=True)
+engine = tenjin.Engine(path=[os.path.join('templates', theme) for theme in [THEME,'admin']] + ['templates'], cache=tenjin.MemoryCacheStorage(), preprocess=True)
 class BaseHandler(tornado.web.RequestHandler):
-        
-    __SPIDER_PATTERN = re.compile('(bot|crawl|spider|slurp|sohu-search|lycos|robozilla)', re.I)
     
     def render(self, template, context=None, globals=None, layout=False):
         if context is None:
             context = {}
         context.update({
             'request':self.request,
-            'is_spider':self.is_spider()
         })
         return engine.render(template, context, globals, layout)
 
     def echo(self, template, context=None, globals=None, layout=False):
         self.write(self.render(template, context, globals, layout))
-    
-    def is_spider(self):
-        try:
-            user_agent = self.request.headers['user_agent']
-            return self.__SPIDER_PATTERN.search(user_agent) is not None
-        except:
-            return None
     
 def authorized(url='/admin/login'):
     def wrap(handler):
@@ -160,4 +217,3 @@ def authorized(url='/admin/login'):
                     handler(self, *args, **kw)
         return authorized_handler
     return wrap
-    

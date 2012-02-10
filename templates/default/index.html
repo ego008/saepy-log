@@ -1,7 +1,3 @@
-<?py include("header.html") ?>
-
-<?py for _ in cache_as('index_%d' % page, ARTICLE_LIST_TENJIN_CACHE): ?>
-
 <?py for obj in objs: ?>
             <div class="post" id="post-#{obj.id}">
             <h2><a href="#{obj.absolute_url}" rel="bookmark" title="Permanent Link to #{obj.title}">#{obj.title}</a> </h2>
@@ -19,15 +15,12 @@
 
         <div class="navlink">
 <?py if 1< page <= allpage: ?>
-            <div class="alignleft"><a href="#{{BASE_URL}}/#{listtype}_prev_page/#{page-1}/#{fromid}" >&laquo; 上一页</a></div>
+<?py     tvar = fromid if (listtype == 'index') else name ?>
+            <div class="alignleft"><a href="#{{BASE_URL}}/#{listtype}_prev_page/#{page-1}/#{tvar}/" >&laquo; 上一页</a></div>
 <?py #endif ?>
 
 <?py if page< allpage: ?>
-            <div class="alignright"><a href="#{{BASE_URL}}/#{listtype}_next_page/#{page+1}/#{endid}" >下一页 &raquo;</a></div>
+<?py     tvar = endid if (listtype == 'index') else name ?>
+            <div class="alignright"><a href="#{{BASE_URL}}/#{listtype}_next_page/#{page+1}/#{tvar}/" >下一页 &raquo;</a></div>
 <?py #endif ?>
         </div>
-
-<?py #endfor ?>
-  <!-- /content -->
-
-<?py include("footer.html") ?>

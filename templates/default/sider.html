@@ -1,8 +1,5 @@
-<?py for _ in cache_as('sider', SIDER_TENJIN_CACHE): ?>
-
 <h1><a href="#{{BASE_URL}}">#{{SITE_TITLE2}}</a></h1>
 	<div id="sidebar1">
-<?py include("gg_search.html") ?>
 		<h2 class="small">分类</h2>
 		<ul>
 <?py for cat in cats: ?>
@@ -25,7 +22,7 @@
 
 		<ul class="comments">
 		<?py for each in comments: ?>
-		<li style="background: url('#{each.gravatar}?s=30&d=monsterid') no-repeat;">#{each.author} Says: <span class="grey">#{each.add_time}</span><br/><a href="#{{BASE_URL}}/t/#{each.postid}#r#{each.id}">#{each.short_content}</a></li>
+		<li style="background: url('#{each.gravatar}?s=30&d=monsterid') no-repeat;">#{each.author} Says: <span class="grey">#{each.add_time}</span> <br/> <a href="#{{BASE_URL}}/t/#{each.postid}#r#{each.id}">#{each.short_content}</a></li>
 		<?py #endfor ?>
 		<div class="c"></div>		
 		</ul>
@@ -34,4 +31,3 @@
 <?py include("links.html") ?>
 
 	</div>
-<?py #endfor ?>

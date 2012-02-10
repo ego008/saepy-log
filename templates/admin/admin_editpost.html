@@ -1,4 +1,3 @@
-<?py include("admin_header.html") ?>
 
 <?py if obj: ?>
 <!-- rich editer -->
@@ -30,6 +29,9 @@ $(document).ready(function()	{
 </script>
 
 <!-- /facebox -->
+
+<?py use_default_theme = 'default' in THEMES ?>
+
 <span id="h"></span>
 <h2>#{title} (<a href="/admin/edit_post/#{obj.id}">重新载入</a> | <a href="/t/#{obj.id}" target="_blank">查看该文章</a> | <a href="#deldiv" rel="facebox[.thickstyle]">删除该文章</a>)</h2>
 <p id="text" style="color:red;"></p>
@@ -38,7 +40,12 @@ $(document).ready(function()	{
 
 <p>*标题: <input type="text" id="tit" style="width:430px;" value="${obj.title}" tabindex="2" /> 100s</p>
 <textarea id="html" name="con" style="width:500px;height:300px;" tabindex="3">#{obj.content}</textarea>
-图片最宽显示496px | 上传图片或附件 <input id="filetoupload" type="file" size="45" name="filetoupload" class="input">
+
+<?py if use_default_theme: ?>
+图片最宽显示496px | 
+<?py #endif ?>
+
+上传图片或附件 <input id="filetoupload" type="file" size="45" name="filetoupload" class="input">
 <p>标签: <input type="text" id="tag" style="width:360px;" value="${obj.tags}" tabindex="4" /> 100s 用逗号分隔','<br/>
 <a href="#tagdiv" rel="facebox[.thickstyle]">从最近标签中选择</a>
 </p>
@@ -46,7 +53,14 @@ $(document).ready(function()	{
 
 <?py ck = ['','checked'] ?>
 
-<label>关闭评论 <input type="checkbox" id="clo" value="True" tabindex="5" #{ck[obj.closecomment]} /></label> | 设置阅读密码: <input type="text" id="password" style="width:150px;" value="${obj.password}" tabindex="6" /> 8s
+<label>关闭评论 <input type="checkbox" id="clo" value="True" tabindex="5" #{ck[obj.closecomment]} /></label>
+
+<?py if use_default_theme: ?>
+ | 设置阅读密码: <input type="text" id="password" style="width:150px;" value="${obj.password}" tabindex="6" /> 8s
+<?py else: ?>
+<input type='hidden' value='' id="password" />
+<?py #endif ?>
+
 </p>
 <p><button id="submit" class="bigbtn"> 提交修改 </button></p>
 
@@ -150,7 +164,16 @@ $('#filetoupload').change(function() {
         $(this).upload('/admin/fileupload', function(res) {
             if(res.status == 200){
                 var el = document.getElementById('html');
-                el.value += '\n' + res.msg + '\n附件：' + res.filename;
+                
+				var filetype = res.msg.split(".");
+				var tp ="jpg,gif,bmp,png";
+				var rs=tp.indexOf(filetype[filetype.length-1]);
+				if(rs>=0){
+				    el.value += '\n图片：' + res.filename + '\n<img src="' + res.msg + '" alt="' + res.filename + '" /> \n';
+				}else{
+				    el.value += '\n附件：' + res.filename + ' <a href="' + res.msg + '" target="_blank">点击下载</a> \n';
+				}
+				                
 				el.focus();
             }else{
                 $(this).val("");
@@ -177,4 +200,3 @@ $('#filetoupload').change(function() {
 
 <?py #endif ?>
 
-<?py include("admin_footer.html") ?>

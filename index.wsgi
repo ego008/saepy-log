@@ -6,10 +6,9 @@ from admin import urls as adminurls
 
 settings = { 
     'debug': True,
-    #'gzip': True,
 }
 
-app = tornado.wsgi.WSGIApplication(blogurls + adminurls)
+app = tornado.wsgi.WSGIApplication(blogurls + adminurls, **settings)
 
 application = sae.create_wsgi_app(app)
 

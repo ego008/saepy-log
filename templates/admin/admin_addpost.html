@@ -1,4 +1,3 @@
-<?py include("admin_header.html") ?>
 <!-- rich editer -->
 <script type="text/javascript" src="#{JQUERY}"></script>
 <script type="text/javascript" src="/static/markitup/jquery.markitup.js"></script>
@@ -29,6 +28,8 @@ $(document).ready(function()    {
 
 <!-- /facebox -->
 
+<?py use_default_theme = ('default' == THEME) ?>
+
 <span id="h"></span>
 <h2>#{title}</h2>
 <p id="text" style="color:red;"></p>
@@ -37,12 +38,24 @@ $(document).ready(function()    {
 
 <p>*标题: <input type="text" id="tit" style="width:430px;" value="" tabindex="2" /> 100s</p>
 <textarea id="html" name="con" style="width:500px;height:300px;" tabindex="3"></textarea>
-图片最宽显示496px | 上传图片或附件 <input id="filetoupload" type="file" size="45" name="filetoupload" class="input">
+
+<?py if use_default_theme: ?>
+图片最宽显示496px | 
+<?py #endif ?>
+
+上传图片或附件 <input id="filetoupload" type="file" size="45" name="filetoupload" class="input">
 <p>标签: <input type="text" id="tag" style="width:360px;" value="" tabindex="4" /> 100s 用逗号分隔','<br/>
 <a href="#tagdiv" rel="facebox[.thickstyle]">从最近标签中选择</a>
 </p>
 <p>
-<label>关闭评论 <input type="checkbox" id="clo" value="True" tabindex="5" /></label> | 设置阅读密码: <input type="text" id="password" style="width:150px;" value="" tabindex="6" /> 8s
+<label>关闭评论 <input type="checkbox" id="clo" value="True" tabindex="5" /></label>
+
+<?py if use_default_theme: ?>
+ | 设置阅读密码: <input type="text" id="password" style="width:150px;" value="" tabindex="6" /> 8s
+<?py else: ?>
+<input type='hidden' value='' id="password" />
+<?py #endif ?>
+
 </p>
 <p><button id="submit" class="bigbtn"> 提交文章 </button></p>
 
@@ -137,7 +150,16 @@ $('#filetoupload').change(function() {
         $(this).upload('/admin/fileupload', function(res) {
             if(res.status == 200){
                 var el = document.getElementById('html');
-                el.value += '\n' + res.msg + '\n附件：' + res.filename;
+                
+                var filetype = res.msg.split(".");
+                var tp ="jpg,gif,bmp,png";
+                var rs=tp.indexOf(filetype[filetype.length-1]);
+                if(rs>=0){
+                    el.value += '\n图片：' + res.filename + '\n<img src="' + res.msg + '" alt="' + res.filename + '" /> \n';
+                }else{
+                    el.value += '\n附件：' + res.filename + ' <a href="' + res.msg + '" target="_blank">点击下载</a> \n';
+                }
+                
                 el.focus();
             }else{
                 $(this).val("");
@@ -148,5 +170,3 @@ $('#filetoupload').change(function() {
 });
 </script>
 <!-- /ajaxfileupload -->
-
-<?py include("admin_footer.html") ?>

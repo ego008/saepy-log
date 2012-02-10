@@ -1,13 +1,8 @@
-<?py include("header.html") ?>
-
-<?py for _ in cache_as('post_%s' % str(obj.id), ARTICLE_TENJIN_CACHE): ?>
-
             <div class="post" id="post-#{obj.id}">
             <h2><a href="#{obj.absolute_url}" rel="bookmark" title="Permanent Link to #{obj.title}">#{obj.title}</a> </h2>
             <div class="postmetadata-top"><small>By #{{ADMIN_NAME}} at #{obj.add_time_fn} in <a href="#{{BASE_URL}}/category/#{obj.category}/" rel="category tag">#{obj.category}</a> ( <a href="#{obj.absolute_url}#comments" title="Comment on #{obj.title}">#{obj.comment_num} Comments</a> )</small></div>
-            <div>
+            <div id="postcondiv">
             #{obj.content}
-<div class="addthis_toolbox addthis_default_style addthis_32x32_style" addthis:url='#{obj.absolute_url}' addthis:title='#{obj.title}' ><a class="addthis_button_preferred_1"></a><a class="addthis_button_preferred_2"></a><a class="addthis_button_preferred_3"></a><a class="addthis_button_preferred_4"></a><a class="addthis_button_compact"></a></div>
             </div>
         <?py if obj.tags: ?>
             <div class="postmetadata-bottom"><small>Tags: #{obj.taglist}<br/>[本文引用地址] #{obj.shorten_url}</small></div>
@@ -35,7 +30,6 @@
 <?py #endif ?>
 </div>
 
-<?py #endfor ?>
 
 
 <a name="comments"></a>
@@ -46,11 +40,7 @@
 <h2 class="comments">There are #{obj.comment_num} Comments to "#{obj.title}"</h2>
 <ul class="singlecomments" id="commentlist">
 
-<?py for _ in cache_as('post_comments_%s' % str(obj.id), ARTICLE_COMMENT_TENJIN_CACHE): ?>
-
 <?py include("comments.html") ?>
-
-<?py #endfor ?>
 
 </ul>
 
@@ -102,7 +92,7 @@ function reply(toid, name){
 </form>
     
 <script src="#{JQUERY}" type="text/javascript"></script>
-<script src="/static/default/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/jquery-plugin/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
 
 <script>
 
@@ -203,6 +193,7 @@ function goon(){
                 if(data.lavenum == 0){
                     $('#idgoon').html('没有了！在下面补上一条吧！！');
                 }
+                
             }
         }
         
@@ -224,7 +215,3 @@ $(document).ready(function(){
 <?py #endif ?>
 
 </div>
-
-  <!-- /content -->
-
-<?py include("footer.html") ?>

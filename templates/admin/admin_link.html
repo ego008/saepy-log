@@ -1,5 +1,3 @@
-<?py include("admin_header.html") ?>
-
 <h2>#{title}</h2>
 
 <form action="" method="post">
@@ -26,5 +24,3 @@ URL: <input type="text" name="url" value="" size="46" tabindex="3" />
 <li><a href="#{i.url}" title="Link to #{i.url}" target="_blank">#{i.name}</a> ( <a href="/admin/links?id=#{i.id}&act=edit">Edit</a> | <a href="/admin/links?id=#{i.id}&act=del">Delete</a> )</li>
 <?py #endfor ?>
 </ul>
-
-<?py include("admin_footer.html") ?>
