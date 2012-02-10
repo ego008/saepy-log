@@ -30,7 +30,7 @@ $(document).ready(function()	{
 
 <!-- /facebox -->
 
-<?py use_default_theme = 'default' in THEMES ?>
+<?py use_default_theme = ('default' == THEME) ?>
 
 <span id="h"></span>
 <h2>#{title} (<a href="/admin/edit_post/#{obj.id}">重新载入</a> | <a href="/t/#{obj.id}" target="_blank">查看该文章</a> | <a href="#deldiv" rel="facebox[.thickstyle]">删除该文章</a>)</h2>
