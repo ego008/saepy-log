@@ -1,0 +1,96 @@
+<div>
+    <article class="hentry" role="article">
+        <header>
+            <h1 class="entry-title">#{obj.title}</h1>
+            <p class="meta">
+                <small>#{obj.add_time_fn}</small>
+            </p>
+
+        </header>
+        <div class="entry-content" id="postcondiv">#{obj.content}</div>
+        <footer>
+            <p class="meta grey">
+                <span>Posted by <strong>#{{ADMIN_NAME}}</strong></span> |
+
+                <span class="categories greyhref">
+                    category:
+                    <a href="#{{BASE_URL}}/category/#{obj.category}/" rel="category tag">#{obj.category}</a>
+                </span>
+                <?py if obj.tags: ?>
+                <span class="categories greyhref">
+                  | Tags: #{obj.taglist}
+                </span>
+                <?py #endif ?>
+                
+
+                
+            </p>
+            
+            <div  style="display:block;margin-bottom:20px;">
+            <!-- JiaThis Button BEGIN -->
+            <div id="jiathis_style_32x32"><span class="jiathis_txt">分享到：</span>
+            <a class="jiathis_button_tsina"></a>
+            <a class="jiathis_button_ishare"></a>
+            <a class="jiathis_button_renren"></a>
+            <a class="jiathis_button_baidu"></a>
+            <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+            <a class="jiathis_counter_style"></a>
+            </div>
+            <script type="text/javascript" >
+            var jiathis_config={
+            summary:"",
+            hideMore:false
+            }
+            </script>
+            <script type="text/javascript" src="http://v2.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
+            <!-- JiaThis Button END -->
+            <div class="c"></div>
+            </div>
+            
+            
+            <?py if obj.relative: ?>
+            <p class="topline grey">See also:</p>
+            <ul class="greyhref">
+            <?py     for robj in obj.relative: ?>
+            <li><a href="#{{BASE_URL}}/topic/#{robj.id}/#{robj.slug}" rel="bookmark">#{robj.title}</a></li>
+            <?py     #endfor ?>
+            </ul>
+            <?py #endif ?>
+            
+            
+            <div class="topline greyhref grey">
+            <?py if obj.prev_obj: ?>
+            Older &rsaquo; <a href="#{{BASE_URL}}/topic/#{obj.prev_obj.id}/#{obj.prev_obj.slug}" rel="prev">#{obj.prev_obj.title}</a>
+            <br/> 
+            <?py #endif ?>
+            
+            <?py if obj.next_obj: ?>
+            Newer &rsaquo; <a href="#{{BASE_URL}}/topic/#{obj.next_obj.id}/#{obj.next_obj.slug}" rel="next">#{obj.next_obj.title}</a> 
+            <?py #endif ?>
+            </div>            
+                        
+        </footer>
+    </article>
+    
+    <?py if DISQUS_WEBSITE_SHORTNAME: ?>
+    <section>
+        <h1 class="topline">Comments</h1>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = '#{{DISQUS_WEBSITE_SHORTNAME}}'; // required: replace example with your forum shortname
+        
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+        
+    </section>
+    <?py #endif ?>
+       
+</div>

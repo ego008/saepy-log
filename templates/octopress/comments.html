@@ -1,0 +1,26 @@
+<?py for cobj in cobjs: ?>
+<a name="r#{cobj.id}"></a>
+<li id="comment-#{cobj.id}"> 
+    <div> 
+        <div> 
+        <img alt='' src="#{cobj.gravatar}?s=48&d=monsterid" class='avatar' height='48' width='48' />
+        <div class="fl">
+<?py if cobj.url: ?>
+        <a href='#{cobj.url}' target="_blank" rel="nofollow">#{cobj.author}</a>
+<?py else: ?>
+        #{cobj.author}
+<?py #endif ?>
+        <span class="grey">says:</span>  <br/><em class="grey"><a href="#{{BASE_URL}}/t/#{cobj.postid}#r#{cobj.id}">#{cobj.add_time}</a></em>
+        </div>
+        <div class="fr"><a href="#respond" onclick="reply('#{cobj.id}','#{cobj.author}')">Reply</a></div>
+        <div class="c"></div>
+        </div> 
+<?py if cobj.visible: ?>
+        <p>#{cobj.content}</p>
+<?py else: ?>
+        <em>Your comment is awaiting moderation.</em>
+<?py #endif ?>
+         
+    </div>
+</li> 
+<?py #endfor ?>

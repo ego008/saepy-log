@@ -1,0 +1,25 @@
+<span id="h"></span>
+<li id="comment-#{cobjid}"> 
+    <div> 
+        <div> 
+        <img alt='' src='#{gravatar}?s=48&d=monsterid' class='avatar' height='48' width='48' />
+        <div class="fl">
+<?py if url: ?>
+        <a href='#{url}' target="_blank" rel="nofollow">#{author}</a>
+<?py else: ?>
+        #{author}
+<?py #endif ?>
+        <span class="grey">says:</span>  <br/><em class="grey"></em>
+        </div>
+        
+        <div class="c"></div>
+        </div> 
+<?py if visible: ?>
+        <p>#{content.replace('\n','<br/>')}</p>
+<?py else: ?>
+        <em>Your comment is awaiting moderation.</em>
+<?py #endif ?>
+         
+    </div>
+</li> 
+

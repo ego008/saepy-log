@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#{{LANGUAGE}}" lang="#{{LANGUAGE}}">
+<head profile="http://gmpg.org/xfn/11">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>#{title}</title>
+	<link rel="stylesheet" href="/static/admin/style.css" type="text/css" media="screen" />
+</head>
+<body>
+<div id="wrap">
+<a name="top"></a>
+<div id="contentwrap">
+		<div id="content">
+		<h1><a href="#{{BASE_URL}}" target="_blank">#{SITE_TITLE}</a></h1>
+        <div class="post">
+
+#{_content}
+
+		</div>
+
+</div>
+			
+	<div id="sidebar1wrap">
+	<h1><a href="/admin/">管理面板</a></h1>
+	<div id="sidebar1">
+		<h2 class="small">管理</h2>
+		<ul>
+			<li><a href="/admin/add_post">发表 文章</a></li>
+			<li><a href="/admin/edit_post/">编辑/删除 文章</a></li>
+			<li><a href="/admin/comment/">评论管理</a></li>
+			<li><a href="/admin/links">友情链接管理</a></li>
+			<li><a href="/admin/flushdata">清空 缓存/数据</a></li>
+			<li><a href="/admin/logout">安全退出</a></li>
+		</ul>
+		
+	</div>
+</div>	</div>
+<div id="footer"><small>POWERED BY <a href="http://saepy.sinaapp.com" target="_blank">saepy-log</a></small></div>
+</div>
+</body>
+</html>

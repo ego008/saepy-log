@@ -1,0 +1,38 @@
+<div class="blog-index">
+<?py for obj in objs: ?>
+<article>
+   <header>
+       <h1 class="entry-title"><a href="#{obj.absolute_url}" rel="bookmark" title="Permanent Link to #{obj.title}">#{obj.title}</a></h1>
+       <p class="meta">
+        <?py hrefname = 'comments' if (obj.comment_num >0) else 'respond' ?>
+        <small>#{obj.add_time_fn} in <a href="#{{BASE_URL}}/category/#{obj.category}/" rel="category tag">#{obj.category}</a> <a href="#{obj.absolute_url}##{hrefname}" title="Comment on #{obj.title}" class="count">#{obj.comment_num}</a></small>
+       </p>
+   </header>
+   <div class="entry-content">#{obj.shorten_content}</div>
+   <?py if obj.tags: ?>
+       <small style="color:#999">Tags: #{obj.taglist}</small>
+   <?py #endif ?>
+   <footer>
+     <a rel="full-article" href="#{obj.absolute_url}">Read On</a>
+   </footer>
+</article>
+<?py #endfor ?>
+
+   <nav role="pagination">
+       <div>
+        <?py if 1< page <= allpage: ?>
+        <?py     tvar = fromid if (listtype == 'index') else name ?>
+        <a class="prev" href="#{{BASE_URL}}/#{listtype}_prev_page/#{page-1}/#{tvar}/">&larr; Newer</a>
+        <?py #endif ?>
+         
+         &nbsp;
+         
+        <?py if page< allpage: ?>
+        <?py     tvar = endid if (listtype == 'index') else name ?>
+        <a class="next" href="#{{BASE_URL}}/#{listtype}_next_page/#{page+1}/#{tvar}/">Older &rarr;</a>
+        <?py #endif ?>            
+        
+        
+       </div>
+   </nav>
+</div>

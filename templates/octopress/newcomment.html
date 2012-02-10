@@ -1,0 +1,117 @@
+<a rel="nofollow" id="cancel-comment-reply-link" href="#{obj.absolute_url}#respond" style="display:none;">Cancel Reply</a><h2 class="respond">Write a Comment</h2>
+<form action="#{obj.absolute_url}" method="post" id="commentform">
+    <p>
+    <input type="text" id="author" name="author" placeholder="First and last name" required tabindex="1" /> 
+    <label for="name">* Name (required)</label> 
+    </p>
+    <p> 
+    <input type="text" id="email" name="email" placeholder="example@domain.com" required tabindex="2" /> 
+    <label for="email">* Email (required, not published)</label>
+    </p>
+    <p> 
+    <input type="text" id="url" name="url" placeholder="http://www.yourdomain.com" tabindex="3" /> 
+    <label for="email">Website (Optional)</label>
+    </p>
+    <p><label for="comment">* Your Message (required) 10~500s</label> </p>
+    <textarea name="comment" id="commentbox" tabindex="4"></textarea> 
+    <p>
+    <input name="submit" class="submit" type="button" id="submit" tabindex="5" value="Submit Comment" /> 
+    </p>
+    
+    <input type='hidden' value='#{obj.id}' id='postkeyname' /> 
+    <input type='hidden' value='' id='toid' />
+    <p id="text"></p>
+
+</form>
+
+<script src="/static/jquery-plugin/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+
+function testReg(reg,str){
+    return reg.test(str);
+}
+
+$('#submit').click(function(){
+    var emailreg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/g;
+    var urlreg = /^http:\/\/.+\..+/;
+    var email = $('#email').val();
+    var url = $('#url').val();
+    var con = $('#commentbox').val();
+    var author = $('#author').val();
+    
+    if(author.length< 1 || author.length > 30){
+        $('#author').focus();
+        return;
+    }
+        
+    if(!testReg(emailreg,email)){
+        $('#email').focus();
+        return;
+    }
+    if(url.length>0){
+        if(!testReg(urlreg,url)){
+            $('#url').focus();
+            return;
+        }
+    }
+    if(con.length< 10 || con.length > 500){
+        $('#commentbox').focus();
+        return;
+    }
+        
+    $('#submit').attr('disabled', 'disabled');
+    $('#text').html("Sending now.....");
+    
+    $.cookie('author', author, { expires: 365, path: '/' });
+    $.cookie('email', email, { expires: 365, path: '/' });
+    $.cookie('url', url, { expires: 365, path: '/' });
+    
+    $.ajax({
+        type: 'POST',
+        url: '#{request.path}',
+        dataType: "json",
+        data: {'act': 'postcomment', 'author': author, 'email':email, 'url': url, 'con': con,'postid': $('#postkeyname').val(), 'toid': $('#toid').val()},
+        success: function(data){
+              if(data.status == 200){
+                  $('#commentlist').append(data.msg);
+                  scroll(0,$("#h").position().top);
+                  $('#commentsec').fadeIn("slow");
+                  $('#commentbox').val('');
+                  $('#text').html('');
+                  var cnum = Number($.cookie('usercomnum'));
+                  if(cnum == null){
+                      cnum = 1;
+                  }else{
+                      cnum += 1;
+                  }
+                  $.cookie('usercomnum', cnum, { expires: 1, path: '/' });
+                  $('#submit').removeAttr("disabled");
+                  //window.location.reload();
+              }else{
+                  $('#text').html(data.msg);
+              }
+              $('#submit').removeAttr("disabled");
+        }
+        
+    });
+    
+    return false;
+    
+});
+
+function reply(toid, name){
+    var ct = $('#commentbox');
+    ct.focus();
+    ct.val('@'+name + ' ' + ct.val());
+    $('#toid').val(toid);
+    return false;
+}
+
+$(document).ready(function(){      
+    $('#author').val($.cookie('author'));
+    $('#email').val($.cookie('email'));
+    $('#url').val($.cookie('url'));    
+});
+
+</script>

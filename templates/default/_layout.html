@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#{{LANGUAGE}}" lang="#{{LANGUAGE}}">
+<head profile="http://gmpg.org/xfn/11">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>#{title}</title>
+	<link rel="stylesheet" href="#{{BASE_URL}}/static/themes/default/style.css" type="text/css" media="screen" />
+	<link rel="shortcut icon" href="#{{BASE_URL}}/favicon.ico" type="image" />
+	<link rel="alternate" type="application/rss+xml" title="#{SITE_TITLE} RSS Feed" href="#{{BASE_URL}}/feed" />
+<link rel='index' title='#{SITE_TITLE}' href='#{{BASE_URL}}/' />
+<?py if 'postdetail' in _context and postdetail: ?>
+<link rel='start' title='${obj.title}' href='#{obj.absolute_url}' /> 
+<?py     if obj.prev_obj: ?>
+<link rel='prev' title='${obj.prev_obj.title}' href='#{{BASE_URL}}/topic/#{obj.prev_obj.id}/#{obj.prev_obj.slug}' /> 
+<?py     #endif ?>
+<?py     if obj.next_obj: ?>
+<link rel='next' title='${obj.next_obj.title}' href='#{{BASE_URL}}/topic/#{obj.next_obj.id}/#{obj.next_obj.slug}' /> 
+<?py     #endif ?>
+<link rel='shortlink' href='#{{BASE_URL}}/t/#{obj.id}' />
+<?py #endif ?>
+<?py if 'keywords' in _context and 'description' in _context: ?>
+<meta name="description" content="${description}" />
+<meta name="keywords" content="${keywords}" />
+<?py #endif ?>
+<link rel="canonical" href="#{{BASE_URL}}#{request.uri}" />
+</head>
+<body>
+<div id="wrap">
+<a name="top"></a>
+<div id="contentwrap">
+		<div id="content">
+		<h1><a href="#{{BASE_URL}}">#{SITE_TITLE}</a> | <span class="description">#{{SITE_SUB_TITLE}}</span></h1>
+  <!-- /header -->
+
+#{_content}
+
+  <!-- /content -->
+
+	</div>
+		<div class="content-margin-20">&nbsp;</div>
+	<div id="sidebar1wrap">
+	
+	<?py include("sider.html") ?>
+	
+	</div>
+</div>
+<div id="footer"><small> &copy; #{{COPY_YEAR}} - <a href="#{{BASE_URL}}">#{SITE_TITLE}</a></small> 版权所有，欢迎<<a href="#{{BASE_URL}}/feed">订阅</a>>，程序由 <a href="http://saepy.sinaapp.com" target="_blank">SAEpy-log</a> 提供| <a  rel="nofollow" href="#top">回到页面顶部 ↑</a><br/><br/>
+<span class="grey">响应时间 <span id="requesttime">#{ int(request.request_time()*1000) }</span> 毫秒</span> | <a href="#{{BASE_URL}}/admin/" style="color:grey" rel="nofollow">管理登录</a><br/><br/>
+<a href="http://sae.sina.com.cn" target="_blank"><img src="http://static.sae.sina.com.cn/image/poweredby/117X12px.gif" title="Powered by Sina App Engine"></a>
+</div>
+</div>
+
+<?py if 'postdetail' in _context and postdetail: ?>
+<?py     if obj.highlight: ?>
+<link rel="stylesheet" title="Sunburst" href="/static/highlight/sunburst.min.css">
+<script src="/static/highlight/highlight.min.js"></script>
+<script>
+  hljs.tabReplace = '    ';
+  hljs.initHighlightingOnLoad();
+</script>
+
+<?py     #endif ?>
+
+<?py #endif ?>
+
+<?py if ANALYTICS_CODE: ?>
+#{{ANALYTICS_CODE}}
+<?py #endif ?>
+
+</body>
+</html>

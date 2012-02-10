@@ -1,0 +1,45 @@
+<aside role=sidebar>
+<section>
+    <h1>Recent Comments</h1>
+    <ul id="recent_posts">
+    <?py for each in comments: ?>
+        <li class="post">
+            #{each.author} Says: <span class="grey">${each.add_time}</span> <br/> <a href="#{{BASE_URL}}/t/#{each.postid}#r#{each.id}">#{each.short_content} </a>
+        </li>
+    <?py #endfor ?>
+    </ul>
+</section>
+
+<section>
+    <h1>Category</h1>
+    <ul id="Category_list">
+    <?py for cat in cats: ?>
+        <li class="category">
+            <a title="View all posts filed under #{cat.name}" href="#{{BASE_URL}}/category/#{cat.name}/">#{cat.name} <span class="tag_meta">(#{cat.id_num})</span></a>
+        </li>
+    <?py #endfor ?>
+    </ul>
+</section>
+
+<section>
+    <h1>Tags</h1>
+    <p id="top_tags">
+    <?py for tagi in tags: ?>
+        <a title="#{tagi.name}" href="#{{BASE_URL}}/tag/#{tagi.name}/">#{tagi.name}</a> <span class="tag_meta">(#{tagi.id_num})</span> 
+    <?py #endfor ?>
+    </p>
+</section>
+
+<section>
+    <h1>Link Broll</h1>
+    <ul id="Category_list">
+    <?py for link in LINK_BROLL: ?>
+        <li class="category"><a href="#{link['url']}" target="_blank">#{link['text']}</a></li>
+    <?py #endfor ?>
+    <?py for link in links: ?>
+        <li class="category"><a href="#{link['url']}" target="_blank">#{link['name']}</a></li>
+    <?py #endfor ?>    
+    </ul>
+</section>
+
+</aside>
