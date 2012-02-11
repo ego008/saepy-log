@@ -3,8 +3,8 @@ SAEpy-log 是一款运行在SAE/python上轻型的、性能卓越的blog程序
 示例 http://saepy.sinaapp.com
 
 说明
-SAEpy-log 是 SAE python blog的组合简写，是学习使用SAE 的生成物。
-没有系统的设计，能写点博客就行。
+SAEpy-log 是 SAE python blog的简写，是学习使用SAE 的生成物。
+没有设计得很复杂，能写点博客就行。
 
 性能
 页面响应一般少于150毫秒，平均在60毫秒左右，已缓存页面响应常在3~6毫秒；
@@ -44,12 +44,12 @@ AJAX表单
 SAEpy-log程序主体以MIT许可发布。
 
 另外还使用到了下列不属于本程序的库或资源：
-kuwata-lab.com的[Tenjin](http://www.kuwata-lab.com/tenjin/)模板引擎（做了一些修改以适应SAE），（MIT License）
-[jQuery](http://jquery.com/) （MIT License）
+kuwata-lab.com的[Tenjin]( http://www.kuwata-lab.com/tenjin/ )模板引擎（做了一些修改以适应SAE），（MIT License）
+[jQuery]( http://jquery.com/ ) （MIT License）
 Facebox （MIT License）
 jquery.cookie （MIT License）
-[jQuery.upload](http://lagoscript.org) （MIT License）
-[markItUp!](http://markitup.jaysalvat.com/home/) （MIT License）
-[Highlight.js](http://softwaremaniacs.org/soft/highlight/en/) （BSD license）
-[octopress](http://www.octopress.org/)主题 （从WordPress移植过来）
+[jQuery.upload]( http://lagoscript.org ) （MIT License）
+[markItUp!]( http://markitup.jaysalvat.com/home/ ) （MIT License）
+[Highlight.js]( http://softwaremaniacs.org/soft/highlight/en/ ) （BSD license）
+[octopress]( http://www.octopress.org/ )主题 （从WordPress移植过来）
 其他属于Python或Tornado或Sina App Engine自带的库
