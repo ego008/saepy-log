@@ -83,7 +83,9 @@ def post_list_format(posts):
 
 def post_detail_formate(obj):
     if obj:
-        obj.absolute_url = '%s/topic/%d/%s' % (BASE_URL, obj.id, slugfy(obj.title))
+        slug = slugfy(obj.title)
+        obj.slug = slug
+        obj.absolute_url = '%s/topic/%d/%s' % (BASE_URL, obj.id, slug)
         obj.shorten_url = '%s/t/%s' % (BASE_URL, obj.id)
         if '[/code]' in obj.content:
             obj.highlight = True
