@@ -34,7 +34,6 @@
             <a class="jiathis_button_renren"></a>
             <a class="jiathis_button_baidu"></a>
             <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
-            <a class="jiathis_counter_style"></a>
             </div>
             <script type="text/javascript" >
             var jiathis_config={
@@ -60,12 +59,12 @@
             
             <div class="topline greyhref grey">
             <?py if obj.prev_obj: ?>
-            Older &rsaquo; <a href="#{{BASE_URL}}/topic/#{obj.prev_obj.id}/#{obj.prev_obj.slug}" rel="prev">#{obj.prev_obj.title}</a>
+            Newer &rsaquo; <a href="#{{BASE_URL}}/topic/#{obj.prev_obj.id}/#{obj.prev_obj.slug}" rel="prev">#{obj.prev_obj.title}</a>
             <br/> 
             <?py #endif ?>
             
             <?py if obj.next_obj: ?>
-            Newer &rsaquo; <a href="#{{BASE_URL}}/topic/#{obj.next_obj.id}/#{obj.next_obj.slug}" rel="next">#{obj.next_obj.title}</a> 
+            Older &rsaquo; <a href="#{{BASE_URL}}/topic/#{obj.next_obj.id}/#{obj.next_obj.slug}" rel="next">#{obj.next_obj.title}</a> 
             <?py #endif ?>
             </div>            
                         
