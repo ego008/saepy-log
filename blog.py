@@ -114,7 +114,7 @@ class PostDetail(BaseHandler):
             self.redirect(obj.absolute_url, 301)
             return        
         #
-        if obj.password and 'default' in THEMES:
+        if obj.password and 'default' == THEME:
             rp = self.get_cookie("rp%s" % id, '')
             if rp != obj.password:
                 tmpl = '_pw'
