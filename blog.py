@@ -137,7 +137,7 @@ class PostDetail(BaseHandler):
         },layout='_layout.html')
         self.write(output)
         
-        if obj.password and 'default' in THEMES:
+        if obj.password and THEME == 'default':
             return
         else:
             return output
