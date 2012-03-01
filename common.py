@@ -171,7 +171,8 @@ def pagecache(key="", time=PAGE_CACHE_TIME, key_suffix_calc_func=None):
             html = mc.get(key_with_suffix)
             request_time = int(req.request.request_time()*1000)
             if html:
-                req.write(RQT_RE.sub('<span id="requesttime">%d</span>'%request_time, html))
+                req.write(html)
+                #req.write(RQT_RE.sub('<span id="requesttime">%d</span>'%request_time, html))
             else:
                 result = method(*args, **kwargs)
                 mc.set(key_with_suffix, result, time)
@@ -192,6 +193,19 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def echo(self, template, context=None, globals=None, layout=False):
         self.write(self.render(template, context, globals, layout))
+    
+    def set_cache(self, seconds, is_privacy=None):
+        if seconds <= 0:
+            self.set_header('Cache-Control', 'no-cache')
+            #self.set_header('Expires', 'Fri, 01 Jan 1990 00:00:00 GMT')
+        else:
+            if is_privacy:
+                privacy = 'public, '
+            elif is_privacy is None:
+                privacy = ''
+            else:
+                privacy = 'private, '
+            self.set_header('Cache-Control', '%smax-age=%s' % (privacy, seconds))
     
 def authorized(url='/admin/login'):
     def wrap(handler):
@@ -216,4 +230,12 @@ def authorized(url='/admin/login'):
                 else:
                     handler(self, *args, **kw)
         return authorized_handler
+    return wrap
+
+def client_cache(seconds, privacy=None):
+    def wrap(handler):
+        def cache_handler(self, *args, **kw):
+            self.set_cache(seconds, privacy)
+            return handler(self, *args, **kw)
+        return cache_handler
     return wrap

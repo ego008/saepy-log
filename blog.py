@@ -9,7 +9,7 @@ from time import time
 
 from setting import *
 
-from common import BaseHandler, unquoted_unicode, quoted_string, safe_encode, slugfy, pagecache, clear_cache_by_pathlist
+from common import BaseHandler, unquoted_unicode, quoted_string, safe_encode, slugfy, pagecache, clear_cache_by_pathlist, client_cache
 
 from model import Article, Comment, Link, Category, Tag
 
@@ -89,6 +89,7 @@ class IndexPage(BaseHandler):
         return output
         
 class PostDetailShort(BaseHandler):
+    @client_cache(600, 'public')
     def get(self, id = ''):
         obj = Article.get_article_by_id_simple(id)
         if obj:
@@ -258,6 +259,7 @@ class PostDetail(BaseHandler):
         self.write(json.dumps(rspd))
 
 class CategoryDetailShort(BaseHandler):
+    @client_cache(3600, 'public')
     def get(self, id = ''):
         obj = Category.get_cat_by_id(id)
         if obj:
