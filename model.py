@@ -155,6 +155,11 @@ def comment_format(objs):
 ###########
 
 class Article():
+    def get_max_id(self):
+        sdb._ensure_connected()
+        maxobj = sdb.query("select max(id) as maxid from `sp_posts`")
+        return str(maxobj[0]['maxid'])
+    
     def get_last_post_add_time(self):
         sdb._ensure_connected()
         obj = sdb.get('SELECT `add_time` FROM `sp_posts` ORDER BY `id` DESC LIMIT 1')

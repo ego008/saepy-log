@@ -26,9 +26,9 @@ if not debug:
 ######
 def put_obj2storage(file_name = '', data = '', expires='365', type=None, encoding= None, domain_name = STORAGE_DOMAIN_NAME):
     s = sae.storage.Client()
-    #ob = sae.storage.Object(data = data, expires='access plus %s day' % expires, type= type, encoding= encoding)
     ob = sae.storage.Object(data = data, cache_control='access plus %s day' % expires, content_type= type, content_encoding= encoding)
     return s.put(domain_name, file_name, ob)
+    
     
 ######
 class HomePage(BaseHandler):
@@ -118,16 +118,8 @@ class FileUpload(BaseHandler):
                 file_type = ''
                 new_file_name = str(int(time()))
             ##
-            CONTENT_TYPES = set([
-                    "text/plain", "text/html", "text/css", "text/xml", "application/javascript", 
-                    "application/x-javascript", "application/xml", "application/atom+xml",
-                    "text/javascript", "application/json", "application/xhtml+xml"])
             mime_type = myfile['content_type']
-            
-            if mime_type in CONTENT_TYPES:
-                encoding = None#'gzip'
-            else:
-                encoding = None
+            encoding = None
             ###
             
             try:
@@ -201,7 +193,7 @@ class AddPost(BaseHandler):
             clear_cache_by_pathlist(['/', 'cat:%s' % quoted_string(post_dic['category'])])
             
             if not debug:
-                add_task('default', '%s/task/pingrpctask'%BASE_URL)
+                add_task('default', '/task/pingrpctask')
             
             self.write(json.dumps(rspd))
             return
@@ -419,12 +411,15 @@ class PingRPCTask(BaseHandler):
     def get(self):
         for n in range(len(XML_RPC_ENDPOINTS)):
             add_task('default', '%s/task/pingrpc/%d' % (BASE_URL, n))
+        self.write(str(time()))
+    
+    post = get
     
 class PingRPC(BaseHandler):
     def get(self, n = 0):
         import urllib2
         
-        pingstr = self.render('rpc.xml')
+        pingstr = self.render('rpc.xml', {'article_id':Article.get_max_id()})
         
         headers = {
             'User-Agent':'request',
@@ -438,12 +433,15 @@ class PingRPC(BaseHandler):
             data = pingstr,
         )
         try:
-            urllib2.urlopen(req)
-            tip = 'Ping ok'
+            content = urllib2.urlopen(req).read()
+            tip = 'Ping ok' + content
         except:
             tip = 'ping erro'
-        
+            
+        self.write(str(time()) + ": " + tip)
         #add_task('default', '%s/task/sendmail'%BASE_URL, urlencode({'subject': tip, 'content': tip + " " + str(n)}))
+        
+    post = get
 
 class SendMail(BaseHandler):
     def post(self):

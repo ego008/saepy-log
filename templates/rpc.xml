@@ -9,7 +9,7 @@
       <value>#{{BASE_URL}}</value>
     </param>
     <param>
-      <value>#{{BASE_URL}}</value>
+      <value>#{{BASE_URL}}/t/#{{article_id}}</value>
     </param>
     <param>
       <value>#{{BASE_URL}}/feed</value>
