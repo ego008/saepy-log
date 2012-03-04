@@ -185,8 +185,7 @@ class AddPost(BaseHandler):
         if postid:
             Category.add_postid_to_cat(post_dic['category'], str(postid))
             if post_dic['tags']:
-                for tag in post_dic['tags'].split(','):
-                    Tag.add_postid_to_tag(tag, str(postid))
+                Tag.add_postid_to_tags(post_dic['tags'].split(','), str(postid))
             
             rspd['status'] = 200
             rspd['msg'] = '完成： 你已经成功添加了一篇文章 <a href="/t/%s" target="_blank">查看</a>' % str(postid)
@@ -275,12 +274,10 @@ class EditPost(BaseHandler):
                 added_tags = new_tags - old_tags
                 
                 if added_tags:
-                    for tag in added_tags:
-                        Tag.add_postid_to_tag(tag, str(postid))
+                    Tag.add_postid_to_tags(added_tags, str(postid))
                         
                 if removed_tags:
-                    for tag in removed_tags:
-                        Tag.remove_postid_from_tag(tag, str(postid))
+                    Tag.remove_postid_from_tags(removed_tags, str(postid))                
             
             clear_cache_by_pathlist(cache_key_list)
             rspd['status'] = 200

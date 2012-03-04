@@ -317,7 +317,7 @@ class Category():
     def get_cat_by_name(self, name = ''):
         sdb._ensure_connected()
         return sdb.get('SELECT * FROM `sp_category` WHERE `name` = \'%s\' LIMIT 1' % name)
-    
+            
     def get_all_post_num(self, name = ''):
         obj = self.get_cat_by_name(name)
         if obj and obj.content:
@@ -336,42 +336,21 @@ class Category():
         else:
             return []
             
-    def add_or_update_cat(self, name = '', content = ''):
-        obj = self.get_cat_by_name(name)
-        
-        if not obj:
-            query = "INSERT INTO `sp_category` (`name`,`content`) values(%s,%s)"
-            mdb._ensure_connected()
-            return mdb.execute(query, name, content)
-        else:
-            if obj.name != name or obj.content != content:
-                id_num = len(content.split(','))
-                mdb._ensure_connected()
-                if content == '':
-                    return mdb.execute("DELETE FROM `sp_category` WHERE `id` = %s LIMIT 1", obj.id)
-                query = "UPDATE `sp_category` SET `id_num` = %s, `name` =  %s, `content` =  %s WHERE `id` = %s LIMIT 1"
-                return mdb.execute(query, id_num, name, content, obj.id)
-            return obj.id
-            
     def add_postid_to_cat(self, name = '', postid = ''):
-        obj = self.get_cat_by_name(name)
-        if not obj:
-            self.add_or_update_cat(name)
-            obj = self.get_cat_by_name(name)
+        mdb._ensure_connected()
+        #因为 UPDATE 时无论有没有影响行数，都返回0，所以这里要多读一次（从主数据库读）
+        obj = mdb.get('SELECT * FROM `sp_category` WHERE `name` = \'%s\' LIMIT 1' % name)        
         
-        idlist = obj.content.split(',')
-        if postid not in idlist:
-            idlist.insert(0, postid)
-            try:
-                idlist.remove('')
-            except:
-                pass
-            self.add_or_update_cat(name, ','.join(idlist))
+        if obj:
+            query = "UPDATE `sp_category` SET `id_num` = `id_num` + 1, `content` =  concat(%s, `content`) WHERE `id` = %s LIMIT 1"
+            mdb.execute(query, "%s,"%postid, obj.id)
         else:
-            pass
+            query = "INSERT INTO `sp_category` (`name`,`id_num`,`content`) values(%s,1,%s)"
+            mdb.execute(query, name, postid)
     
     def remove_postid_from_cat(self, name = '', postid = ''):
-        obj = self.get_cat_by_name(name)
+        mdb._ensure_connected()
+        obj = mdb.get('SELECT * FROM `sp_category` WHERE `name` = \'%s\' LIMIT 1' % name)        
         if obj:
             idlist = obj.content.split(',')
             if postid in idlist:
@@ -380,7 +359,11 @@ class Category():
                     idlist.remove('')
                 except:
                     pass
-                self.add_or_update_cat(name, ','.join(idlist))
+                if len(idlist) == 0:
+                    mdb.execute("DELETE FROM `sp_category` WHERE `id` = %s LIMIT 1", obj.id)
+                else:
+                    query = "UPDATE `sp_category` SET `id_num` = %s, `content` =  %s WHERE `id` = %s LIMIT 1"
+                    mdb.execute(query, len(idlist), ','.join(idlist), obj.id)                
             else:
                 pass
     
@@ -450,53 +433,38 @@ class Tag():
         else:
             return []
             
-    def add_or_update_tag(self, name = '', content = ''):
-        obj = self.get_tag_by_name(name)
-        
-        if not obj:
-            query = "INSERT INTO `sp_tags` (`name`,`content`) values(%s,%s)"
-            mdb._ensure_connected()
-            return mdb.execute(query, name, content)
-        else:
-            if obj.name != name or obj.content != content:
-                id_num = len(content.split(','))
-                mdb._ensure_connected()
-                if content == '':
-                    return mdb.execute("DELETE FROM `sp_tags` WHERE `id` = %s LIMIT 1", obj.id)
-                query = "UPDATE `sp_tags` SET `id_num` = %s, `name` =  %s, `content` =  %s WHERE `id` = %s LIMIT 1"
-                return mdb.execute(query, id_num, name, content, obj.id)
-            return obj.id
+    def add_postid_to_tags(self, tags = [], postid = ''):
+        mdb._ensure_connected()
+        for tag in tags:
+            obj = mdb.get('SELECT * FROM `sp_tags` WHERE `name` = \'%s\' LIMIT 1' % tag)
             
-    def add_postid_to_tag(self, name = '', postid = ''):
-        obj = self.get_tag_by_name(name)
-        if not obj:
-            self.add_or_update_tag(name)
-            obj = self.get_tag_by_name(name)
-        
-        idlist = obj.content.split(',')
-        if postid not in idlist:
-            idlist.insert(0, postid)
-            try:
-                idlist.remove('')
-            except:
-                pass            
-            self.add_or_update_tag(name, ','.join(idlist))
-        else:
-            pass
-        
-    def remove_postid_from_tag(self, name = '', postid = ''):
-        obj = self.get_tag_by_name(name)
-        if obj:
-            idlist = obj.content.split(',')
-            if postid in idlist:
-                idlist.remove(postid)
-                try:
-                    idlist.remove('')
-                except:
-                    pass            
-                self.add_or_update_tag(name, ','.join(idlist))
+            if obj:
+                query = "UPDATE `sp_tags` SET `id_num` = `id_num` + 1, `content` =  concat(%s, `content`) WHERE `id` = %s LIMIT 1"
+                mdb.execute(query, "%s,"%postid, obj.id)
             else:
-                pass    
+                query = "INSERT INTO `sp_tags` (`name`,`id_num`,`content`) values(%s,1,%s)"
+                mdb.execute(query, tag, postid)
+        
+    def remove_postid_from_tags(self, tags = [], postid = ''):
+        mdb._ensure_connected()
+        for tag in tags:
+            obj = mdb.get('SELECT * FROM `sp_tags` WHERE `name` = \'%s\' LIMIT 1' % tag)
+            
+            if obj:
+                idlist = obj.content.split(',')
+                if postid in idlist:
+                    idlist.remove(postid)
+                    try:
+                        idlist.remove('')
+                    except:
+                        pass
+                    if len(idlist) == 0:
+                        mdb.execute("DELETE FROM `sp_tags` WHERE `id` = %s LIMIT 1", obj.id)
+                    else:
+                        query = "UPDATE `sp_tags` SET `id_num` = %s, `content` =  %s WHERE `id` = %s LIMIT 1"
+                        mdb.execute(query, len(idlist), ','.join(idlist), obj.id)                
+                else:
+                    pass            
 
 Tag = Tag()
 
