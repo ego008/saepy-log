@@ -29,6 +29,29 @@ def put_obj2storage(file_name = '', data = '', expires='365', type=None, encodin
     bucket.put_object(file_name, data, content_type=type, content_encoding= encoding)
     return bucket.generate_url(file_name)
 
+def upload_qiniu(savename="test.txt", filedata=None):
+    if QN_BUCKET and savename and filedata:
+        import qiniu.conf
+        qiniu.conf.ACCESS_KEY = QN_AK
+        qiniu.conf.SECRET_KEY = QN_SK
+
+        import qiniu.rs
+        policy = qiniu.rs.PutPolicy(QN_BUCKET)
+        uptoken = policy.token()
+
+        import qiniu.io
+
+        key = savename
+        if key[0] == "/":
+            key = key[1:]
+        ret, err = qiniu.io.put(uptoken, key, filedata)
+        if err is not None:
+            return False
+        ###下面返回的网址有可能不同，有的是 xxxx.u.qiniudn.com 请改为自己的
+        return "http://%s.qiniudn.com/%s" % (QN_BUCKET, key)
+    else:
+        return False
+
 ######
 class HomePage(BaseHandler):
     @authorized()
@@ -122,7 +145,10 @@ class FileUpload(BaseHandler):
             ###
 
             try:
-                attachment_url = put_obj2storage(file_name = new_file_name, data = myfile['body'], expires='365', type= mime_type, encoding= encoding)
+                if STORAGE_DOMAIN_NAME:
+                    attachment_url = put_obj2storage(file_name = str(new_file_name), data = myfile['body'], expires='365', type= mime_type, encoding= encoding)
+                elif QN_AK and QN_SK and QN_BUCKET:
+                    attachment_url = upload_qiniu(str(new_file_name), myfile['body'])
             except:
                 attachment_url = ''
 

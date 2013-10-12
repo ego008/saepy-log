@@ -28,9 +28,15 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
 </script>
 """ 
 
+##### 存放附件的地方 可选SAE Storage 或 七牛
+## 1） 使用SAE Storage 服务（保存上传的附件），需在SAE管理面板创建，
+## 注意，优先使用 SAE Storage，若用七牛下面值请留空值
+STORAGE_DOMAIN_NAME = ""  #attachment
 
-#使用SAE Storage 服务（保存上传的附件），需在SAE管理面板创建
-STORAGE_DOMAIN_NAME = 'attachment' 
+## 2) 七牛 注册可获永久10G空间和每月10G流量，注册地址 http://t.cn/z8h5lsg
+QN_AK = "" #七牛 ACCESS_KEY
+QN_SK = "" #七牛 SECRET_KEY
+QN_BUCKET = "" #空间名称 , 如 upload
 
 ###设置容易调用的jquery 文件
 JQUERY = "http://lib.sinaapp.com/js/jquery/1.6.2/jquery.min.js"
