@@ -175,6 +175,7 @@ $('#filetoupload').change(function() {
 				}
 				                
 				el.focus();
+				document.getElementsByName("fileupload")[0].value="";
             }else{
                 $(this).val("");
                 alert(res.msg);
